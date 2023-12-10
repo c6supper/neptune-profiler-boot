@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "streetsidesoftware.code-spell-checker",
+    "xaver.clang-format",
+    "ms-vscode.cpptools",
+    "notskm.clang-tidy"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "cSpell.words": [
+    "clockadjust",
+    "hypervisor",
+    "lpthread",
+    "nproc",
+    "qtime"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "editor.formatOnSave": true,
+  "clang-format.style": "google",
+  "clang-format.language.c.enable": true,
+  "[c]": {
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.wordBasedSuggestions": false,
+    "editor.suggest.insertMode": "replace",
+    "editor.semanticHighlighting.enabled": true
+  },
+  "vetur.format.defaultFormatterOptions": {
+    "js-beautify-html": {
+      "wrap_attributes": "force-expand-multiline"
+    },
+    "prettyhtml": {
+      "printWidth": 100,
+      "singleQuote": false,
+      "wrapAttributes": false,
+      "sortAttributes": false
+    }
+  },
+  "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+  "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
+  "C_Cpp.loggingLevel": "Debug",
+  "C_Cpp.formatting": "clangFormat",
+  "files.associations": {
+    "cstdint": "cpp"
+  },
+  "clang-tidy.buildPath": "build",
+  "editor.tabCompletion": "onlySnippets",
+  "editor.snippetSuggestions": "inline",
+  "emmet.showSuggestionsAsSnippets": true,
+}
