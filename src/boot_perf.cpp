@@ -1,4 +1,6 @@
 
+#include "boot_perf.h"
+
 #include <cstdint>
 #include <iostream>
 
