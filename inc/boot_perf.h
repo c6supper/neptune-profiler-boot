@@ -8,7 +8,9 @@ enum {
 };
 
 #include <chrono>  // high_resolution_clock
+#include <functional>
 #include <type_traits>
+#include <vector>
 
 #include "compiler.h"
 
@@ -33,6 +35,9 @@ class BootPerf final {
   BootPerf& run(Op&& op) {
     return run(std::forward<Op>(op));
   }
+
+ private:
+  static std::vector<std::function<int(int)>> runnable_;
 };
 }  // namespace coding_nerd::boot_perf
 
