@@ -19,13 +19,14 @@ using Clock = std::conditional_t<std::chrono::high_resolution_clock::is_steady,
 
 class BootPerf final {
  public:
-  BootPerf();
+  BootPerf() = default;
 
   BootPerf(BootPerf&& other) noexcept = default;
   BootPerf& operator=(BootPerf&& other) noexcept(
       CODING_NERD_BOOT_PERF_PRIVATE_NOEXCEPT_STRING_MOVE()) = default;
   BootPerf(BootPerf const& other) = default;
   BootPerf& operator=(BootPerf const& other) = default;
+  ~BootPerf() = default;
 
   template <typename Op>
   CODING_NERD_BOOT_PERF(NOINLINE)
