@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "clockadjust",
+    "cxxopts",
     "DEINITIALIZER",
     "hypervisor",
     "lpthread",
@@ -92,4 +93,14 @@
   "search.exclude": {
     "**/build": true
   },
+  "C_Cpp.default.defines": [
+    "DEBUG"
+  ],
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/**/**",
+    "${workspaceFolder}/**"
+  ],
+  "clang-tidy.blacklist": [
+    "cxxopts.hpp"
+  ]
 }

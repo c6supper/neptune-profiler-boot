@@ -23,9 +23,32 @@ project(neptune-profiler-boot)
 # Target name
 set(target boot_perf)
 
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE Debug ... FORCE)
+ENDIF()
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 if(OPTION_TARGET)
+  include(DownloadHttps)
+
+  set(CXXOPTS "${CMAKE_SOURCE_DIR}/third_party/inc/cxxopts.hpp")
+  set(CXXOPTS_URL "https://raw.githubusercontent.com/jarro2783/cxxopts/v3.1.1/include/cxxopts.hpp")
+
+  file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/third_party/inc)
+
+  if(EXISTS "${CXXOPTS}")
+    message(STATUS "Using cached CXXOPTS at ${CXXOPTS}")
+  else()
+    message("Downloading ${CXXOPTS_URL} -> ${CXXOPTS}")
+
+    # Actually download the file
+    download_file_https(${CXXOPTS_URL} ${CXXOPTS} TRUE)
+  endif()
+
+  add_compile_options(
+    "$<$<CONFIG:DEBUG>:-g3;-D DEBUG>"
+  )
   set(TARGET_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/${CMAKE_SYSTEM_PROCESSOR})
 
   file(GLOB_RECURSE SRC_FILES
@@ -36,7 +59,11 @@ if(OPTION_TARGET)
   message(DEBUG "SRC_FILES=${SRC_FILES}")
   message(STATUS "${SRC_FILES}")
 
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/inc")
+  include_directories(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/inc"
+  )
 
   add_executable(${target}
     ${SRC_FILES}
