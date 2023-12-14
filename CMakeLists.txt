@@ -24,8 +24,10 @@ project(neptune-profiler-boot)
 set(target boot_perf)
 
 IF(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Debug ... FORCE)
+  SET( CMAKE_BUILD_TYPE Debug)
 ENDIF()
+
+message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 

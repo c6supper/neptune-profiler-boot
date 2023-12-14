@@ -5,7 +5,7 @@
 if(OPTION_CLANG_TIDY)
   find_program(
     CLANG_TIDY_EXE
-    NAMES "clang-tidy"
+    NAMES "clang-tidy-16"
     DOC "Path to clang-tidy executable")
 
   if(NOT CLANG_TIDY_EXE)

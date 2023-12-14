@@ -101,6 +101,7 @@
     "${workspaceFolder}/**"
   ],
   "clang-tidy.blacklist": [
-    "cxxopts.hpp"
+    "cxxopts.hpp",
+    "*.hpp"
   ]
 }

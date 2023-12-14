@@ -15,6 +15,9 @@ enum {
 #include "compiler.h"
 #include "config.h"
 #include "logger.h"
+#include "runnable.h"
+
+#define BootPerfContext() coding_nerd::boot_perf::BootPerf::Instance();
 
 namespace coding_nerd::boot_perf {
 using Clock = std::conditional_t<std::chrono::high_resolution_clock::is_steady,
@@ -25,7 +28,6 @@ class BootPerf final {
  public:
   BootPerf() = default;
   ~BootPerf() = default;
-
   BootPerf(BootPerf&& other) noexcept = delete;
   BootPerf& operator=(BootPerf&& other) noexcept(
       CODING_NERD_BOOT_PERF_PRIVATE_NOEXCEPT_STRING_MOVE()) = delete;
@@ -44,8 +46,12 @@ class BootPerf final {
     return instance;
   }
 
+  static void RegisterRunnable(Runnable&& runnable) {
+    runnable_.push_back(std::move<Runnable>(runnable));
+  };
+
  private:
-  static std::vector<std::function<int(int)>> runnable_;
+  static std::vector<Runnable> runnable_;
 };
 }  // namespace coding_nerd::boot_perf
 
