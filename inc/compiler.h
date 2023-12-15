@@ -1,8 +1,6 @@
 #ifndef COMPILER_H_
 #define COMPILER_H_
 
-#include <string>
-
 #define CODING_NERD_BOOT_PERF(x) CODING_NERD_BOOT_PERF_PRIVATE_##x()
 
 #if defined(__clang__)
@@ -42,6 +40,13 @@
 #else
 #define CODING_NERD_BOOT_PERF_IS_TRIVIALLY_COPYABLE(...) \
   std::is_trivially_copyable<__VA_ARGS__>::value
+#endif
+
+#ifdef _MSC_VER
+#define CODING_NERD_PACK(...) \
+  __pragma(pack(push, 1)) __VA_ARGS__ __pragma(pack(pop))
+#elif defined __GNUC__
+#define CODING_NERD_PACK(...) __VA_ARGS__ __attribute__((__packed__))
 #endif
 
 // noexcept may be missing for std::string.
