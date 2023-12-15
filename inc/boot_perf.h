@@ -9,6 +9,7 @@ enum {
 
 #include <chrono>  // high_resolution_clock
 #include <functional>
+#include <memory>
 #include <type_traits>
 #include <vector>
 
@@ -17,7 +18,10 @@ enum {
 #include "logger.h"
 #include "runnable.h"
 
-#define BootPerfContext() coding_nerd::boot_perf::BootPerf::Instance();
+#define REGISTER_RUNNABLE(x)                                          \
+  do {                                                                \
+    coding_nerd::boot_perf::BootPerf::Instance().RegisterRunnable(x); \
+  } while (0)
 
 namespace coding_nerd::boot_perf {
 using Clock = std::conditional_t<std::chrono::high_resolution_clock::is_steady,
@@ -46,12 +50,12 @@ class BootPerf final {
     return instance;
   }
 
-  static void RegisterRunnable(Runnable&& runnable) {
-    runnable_.push_back(std::move<Runnable>(runnable));
+  static void RegisterRunnable(std::shared_ptr<Runnable>&& runnable) {
+    runnable_.push_back(std::move(runnable));
   };
 
  private:
-  static std::vector<Runnable> runnable_;
+  static std::vector<std::shared_ptr<Runnable>> runnable_;
 };
 }  // namespace coding_nerd::boot_perf
 

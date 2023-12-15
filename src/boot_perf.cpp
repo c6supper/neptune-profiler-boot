@@ -12,8 +12,6 @@ int main(const int argc, const char* argv[]) {
   MONUnusedParameter(argc);
   MONUnusedParameter(argv);
 
-  BootPerfContext();
-
   auto options = parse(argc, argv);
 
   if (!options) {

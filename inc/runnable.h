@@ -8,6 +8,9 @@ class Runnable {
 
  public:
   Runnable() = default;
+  Runnable(Runnable&& other) = default;
+  Runnable(Runnable& other) = delete;
+  Runnable& operator=(Runnable& other) = delete;
   virtual ~Runnable() = 0;
   virtual void run() = 0;
 };
