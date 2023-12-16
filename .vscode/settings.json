@@ -9,14 +9,14 @@
     "qtime"
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    "source.fixAll": "explicit"
   },
   "editor.formatOnSave": true,
   "clang-format.style": "google",
   "clang-format.language.c.enable": true,
   "[c]": {
     "editor.defaultFormatter": "xaver.clang-format",
-    "editor.wordBasedSuggestions": false,
+    "editor.wordBasedSuggestions": "off",
     "editor.suggest.insertMode": "replace",
     "editor.semanticHighlighting.enabled": true
   },
@@ -111,5 +111,6 @@
     "cxxopts.hpp",
     "*.hpp"
   ],
-  "C_Cpp.errorSquiggles": "disabled"
+  "C_Cpp.errorSquiggles": "disabled",
+  "C_Cpp.codeAnalysis.runAutomatically": false
 }

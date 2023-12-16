@@ -7,34 +7,39 @@ enum {
   kBootPerfVersionPatch = 11  // backwards-compatible bug fixes
 };
 
-#include <chrono>  // high_resolution_clock
+#include <fstream>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <type_traits>
 #include <vector>
 
 #include "compiler.h"
 #include "config.h"
 #include "logger.h"
+#include "process_dumper.h"
 #include "runnable.h"
 
-#define REGISTER_RUNNABLE(x)                                          \
-  do {                                                                \
-    coding_nerd::boot_perf::BootPerf::Instance().RegisterRunnable(x); \
+#define BootPerfContext()                         \
+  do {                                            \
+    coding_nerd::boot_perf::BootPerf::Instance(); \
   } while (0)
 
 namespace coding_nerd::boot_perf {
-using Clock = std::conditional_t<std::chrono::high_resolution_clock::is_steady,
-                                 std::chrono::high_resolution_clock,
-                                 std::chrono::steady_clock>;
 
 class BootPerf final {
  public:
-  BootPerf() = default;
+  BootPerf() {
+    std::ofstream ps("/tmp/proc_ps.log");
+    // stat_.open("/tmp/proc_stat.log");
+    // header_.open("/tmp/header");
+
+    registerRunnable(
+        std::make_shared<ProcessDumper<std::ofstream>>(std::move(ps)));
+  }
   ~BootPerf() = default;
   BootPerf(BootPerf&& other) noexcept = delete;
-  BootPerf& operator=(BootPerf&& other) noexcept(
-      CODING_NERD_BOOT_PERF_PRIVATE_NOEXCEPT_STRING_MOVE()) = delete;
+  BootPerf& operator=(BootPerf&& other) = delete;
   BootPerf(BootPerf const& other) = delete;
   BootPerf& operator=(BootPerf const& other) = delete;
 
@@ -42,20 +47,33 @@ class BootPerf final {
   CODING_NERD_BOOT_PERF(NOINLINE)
   BootPerf& run(Op&& op) {
     return run(std::forward<Op>(op));
+
+    while (true) {
+      std::unique_lock<std::mutex> lock(g_bootcharting_finished_mutex);
+      g_bootcharting_finished_cv.wait_for(lock, 200ms);
+      if (g_bootcharting_finished) break;
+
+      log_file(&*stat_log, "/proc/stat");
+      log_file(&*disk_log, "/proc/diskstats");
+      log_processes(&*proc_log);
+    }
   }
 
   static auto& Instance() {
     static BootPerf instance;
     BOOT_PERF_LOG("BootPerf Initialized!");
+    const std::lock_guard<std::mutex> guard(instance.protector_);
+
     return instance;
   }
 
-  static void RegisterRunnable(std::shared_ptr<Runnable>&& runnable) {
+ private:
+  void registerRunnable(std::shared_ptr<Runnable>&& runnable) {
     runnable_.push_back(std::move(runnable));
   };
 
- private:
-  static std::vector<std::shared_ptr<Runnable>> runnable_;
+  std::vector<std::shared_ptr<Runnable>> runnable_;
+  std::mutex protector_;
 };
 }  // namespace coding_nerd::boot_perf
 

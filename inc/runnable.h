@@ -11,7 +11,7 @@ class Runnable {
   Runnable(Runnable&& other) = default;
   Runnable(Runnable& other) = delete;
   Runnable& operator=(Runnable& other) = delete;
-  virtual ~Runnable() = 0;
+  virtual ~Runnable() = default;
   virtual void run() = 0;
 };
 }  // namespace coding_nerd::boot_perf
