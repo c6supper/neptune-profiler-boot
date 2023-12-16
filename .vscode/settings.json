@@ -104,5 +104,8 @@
   ],
   "C_Cpp.errorSquiggles": "disabled",
   "C_Cpp.codeAnalysis.runAutomatically": true,
-  "clang-tidy.lintOnSave": true
+  "clang-tidy.lintOnSave": true,
+  "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
+    "bugprone-signal-handler"
+  ]
 }
