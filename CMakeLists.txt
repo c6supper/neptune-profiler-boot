@@ -24,7 +24,7 @@ project(neptune-profiler-boot)
 set(target boot_perf)
 
 IF(NOT CMAKE_BUILD_TYPE)
-  SET( CMAKE_BUILD_TYPE Debug)
+  SET(CMAKE_BUILD_TYPE Debug)
 ENDIF()
 
 message("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
@@ -46,6 +46,14 @@ if(OPTION_TARGET)
 
     # Actually download the file
     download_file_https(${CXXOPTS_URL} ${CXXOPTS} TRUE)
+  endif()
+
+  set(CMAKE_CXX_STANDARD 17)
+
+  if(NOT DEFINED ${QNX})
+    set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+    set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+    find_package(Threads REQUIRED)
   endif()
 
   add_compile_options(
@@ -70,6 +78,10 @@ if(OPTION_TARGET)
   add_executable(${target}
     ${SRC_FILES}
   )
+
+  if(NOT DEFINED ${QNX})
+    target_link_libraries(${target} Threads::Threads)
+  endif()
 
   if(OPTION_CLANG_TIDY)
     include(ClangTidy)

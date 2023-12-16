@@ -12,7 +12,7 @@ template <typename T>
 class BootPerfClock {
  public:
   BootPerfClock() = default;
-  BootPerfClock(BootPerfClock&& other) = default;
+  BootPerfClock(BootPerfClock&& other) noexcept = default;
   BootPerfClock(BootPerfClock& other) = delete;
   BootPerfClock& operator=(BootPerfClock& other) = delete;
 

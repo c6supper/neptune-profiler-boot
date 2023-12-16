@@ -9,27 +9,16 @@
     "qtime"
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit"
+    "source.fixAll": true
   },
   "editor.formatOnSave": true,
   "clang-format.style": "google",
   "clang-format.language.c.enable": true,
   "[c]": {
     "editor.defaultFormatter": "xaver.clang-format",
-    "editor.wordBasedSuggestions": "off",
+    "editor.wordBasedSuggestions": false,
     "editor.suggest.insertMode": "replace",
     "editor.semanticHighlighting.enabled": true
-  },
-  "vetur.format.defaultFormatterOptions": {
-    "js-beautify-html": {
-      "wrap_attributes": "force-expand-multiline"
-    },
-    "prettyhtml": {
-      "printWidth": 100,
-      "singleQuote": false,
-      "wrapAttributes": false,
-      "sortAttributes": false
-    }
   },
   "C_Cpp.codeAnalysis.clangTidy.enabled": true,
   "C_Cpp.codeAnalysis.clangTidy.useBuildPath": true,
@@ -88,7 +77,10 @@
     "unordered_set": "cpp",
     "map": "cpp",
     "regex": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "condition_variable": "cpp",
+    "mutex": "cpp",
+    "thread": "cpp"
   },
   "clang-tidy.buildPath": "build",
   "editor.tabCompletion": "onlySnippets",
@@ -108,9 +100,9 @@
     "${workspaceFolder}/**"
   ],
   "clang-tidy.blacklist": [
-    "cxxopts.hpp",
-    "*.hpp"
+    "cxxopts.hpp"
   ],
   "C_Cpp.errorSquiggles": "disabled",
-  "C_Cpp.codeAnalysis.runAutomatically": false
+  "C_Cpp.codeAnalysis.runAutomatically": true,
+  "clang-tidy.lintOnSave": true
 }
