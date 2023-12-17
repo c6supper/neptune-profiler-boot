@@ -6,14 +6,18 @@ A boot profiler for hypervisor based system
 Prerequisites
 -----------------
 
-> * 
+> * Install VSCode/LLVM-16 or 17(include clang & tools)/Python3
+> * pip3 install pycairo
 
 How to Build
 -----------------
 
 > * mkdir build && cd build
-> * for x86 testing purpose
->> * cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../
+> * for Linux testing purpose
+  ```bash
+  cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../
+  make -j$(nproc)
+  ```
 > * for QNX
   ```bash
   cmake -DCMAKE_CROSSCOMPILING=1 -DCMAKE_TOOLCHAIN_FILE=$PROJECT_ROOT/cmake/QNXToolchain.cmake \
