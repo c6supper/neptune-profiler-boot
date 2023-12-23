@@ -27,10 +27,10 @@ How to Build
   ```
 > * make install
 
-Documentation
+How to Run
 -----------------
 
-Read the API Docs [here](doc/neptune-profiler-boot-doc.md)
+> * 
 
 License
 -------

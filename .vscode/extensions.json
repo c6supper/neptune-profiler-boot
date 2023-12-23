@@ -3,7 +3,6 @@
     "streetsidesoftware.code-spell-checker",
     "xaver.clang-format",
     "ms-vscode.cpptools",
-    "notskm.clang-tidy",
     "cs128.cs128-clang-tidy"
   ]
 }

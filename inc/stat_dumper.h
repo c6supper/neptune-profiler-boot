@@ -7,6 +7,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "clock.h"
 #include "dumper.h"
@@ -14,14 +15,14 @@
 
 namespace coding_nerd::boot_perf {
 
-struct proc_stat {
+struct ProcStat {
   template <typename T>
-  struct sequence {
+  struct Sequence {
     T total;
     std::vector<T> per_item;
   };
 
-  struct cpu {
+  struct CPU {
     uint64_t user{0};
     uint64_t nice{0};
     uint64_t system{0};
@@ -34,14 +35,14 @@ struct proc_stat {
     uint64_t guest_nice{0};
   };
 
-  sequence<cpu> cpus;
-  sequence<uint64_t> intr;
+  Sequence<CPU> cpus;
+  Sequence<uint64_t> intr;
   uint64_t ctxt;
   uint64_t btime;
   uint64_t processes;
   size_t procs_running;
   size_t procs_blocked;
-  sequence<uint64_t> softirq;
+  Sequence<uint64_t> softirq;
 };
 
 template <typename Out>
@@ -54,7 +55,7 @@ class StatDumper : public Dumper<void, Out>, public Runnable {
   void dump() override {
     out_ << BootPerfClock<void>::get_uptime_jiffies() << "\n";
 
-    std::ifstream ifstat(std::move("/proc/stat"));
+    std::ifstream const ifstat(std::move("/proc/stat"));
     out_ << ifstat.rdbuf();
 
     out_ << "\n";
