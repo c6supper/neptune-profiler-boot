@@ -6,7 +6,8 @@
     "hypervisor",
     "lpthread",
     "nproc",
-    "qtime"
+    "qtime",
+    "softirq"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit"
@@ -82,15 +83,17 @@
     "mutex": "cpp",
     "thread": "cpp"
   },
-  "clang-tidy.buildPath": "build",
+  "clang-tidy.buildPath": "./build",
   "editor.tabCompletion": "onlySnippets",
   "editor.snippetSuggestions": "inline",
   "emmet.showSuggestionsAsSnippets": true,
   "files.exclude": {
-    "**/build": true
+    "**/build": true,
+    "**/log": true
   },
   "search.exclude": {
-    "**/build": true
+    "**/build": true,
+    "**/log": true
   },
   "C_Cpp.default.defines": [
     "DEBUG"

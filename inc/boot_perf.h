@@ -21,6 +21,7 @@ enum {
 #include "logger.h"
 #include "process_dumper.h"
 #include "runnable.h"
+#include "stat_dumper.h"
 
 #define BootPerfContext() coding_nerd::boot_perf::BootPerf::Instance()
 
@@ -30,11 +31,14 @@ class BootPerf final {
  public:
   BootPerf() {
     std::ofstream ps("/tmp/proc_ps.log");
-    // stat_.open("/tmp/proc_stat.log");
+    std::ofstream stat("/tmp/proc_stat.log");
     // header_.open("/tmp/header");
 
     registerRunnable(
         std::make_shared<ProcessDumper<std::ofstream>>(std::move(ps)));
+
+    registerRunnable(
+        std::make_shared<StatDumper<std::ofstream>>(std::move(stat)));
 
     BOOT_PERF_LOG("BootPerf Initialized!");
   }
