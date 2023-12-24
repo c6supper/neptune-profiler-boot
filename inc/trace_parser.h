@@ -2,6 +2,7 @@
 #define TRACE_PARSER_H_
 
 #include "runnable.h"
+#include "trace_type.h"
 
 namespace coding_nerd::boot_perf {
 template <typename In, typename Out>

@@ -7,7 +7,9 @@
     "lpthread",
     "nproc",
     "qtime",
-    "softirq"
+    "SETEVENT",
+    "softirq",
+    "SYSPAGE"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit"
