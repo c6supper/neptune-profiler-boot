@@ -7,4 +7,6 @@
 #undef BOOT_PERF_LOG_ENABLED
 #endif
 
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+
 #endif  // CONFIG_H_

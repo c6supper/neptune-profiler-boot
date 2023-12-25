@@ -1,6 +1,8 @@
 #ifndef TRACE_EVENT_H_
 #define TRACE_EVENT_H_
 
+#include <cstdint>
+#include <memory>
 #include "trace_type.h"
 
 namespace coding_nerd::boot_perf {
@@ -30,7 +32,7 @@ class TraceEvent {
   cpu_type cpu_;
   uint32_t timestamp_;
 
-  static void to_ext(const class_type int_class, const event_type int_event,
+  static void to_ext(const class_type int_class, event_type int_event,
                      class_type& ext_class, event_type& ext_event) {
     int event_64 = 0;
 

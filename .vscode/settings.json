@@ -34,7 +34,6 @@
   },
   "editor.formatOnSave": true,
   "[c]": {
-    "editor.defaultFormatter": "xaver.clang-format",
     "editor.wordBasedSuggestions": "off",
     "editor.suggest.insertMode": "replace",
     "editor.semanticHighlighting.enabled": true
@@ -117,7 +116,8 @@
   ],
   "C_Cpp.default.includePath": [
     "${workspaceFolder}/**/**",
-    "${workspaceFolder}/**"
+    "${workspaceFolder}/**",
+    "${workspaceFolder}/**/**/**"
   ],
   "clang-tidy.blacklist": [
     "cxxopts.hpp"
