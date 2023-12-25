@@ -1,8 +1,6 @@
 {
   "recommendations": [
     "streetsidesoftware.code-spell-checker",
-    "xaver.clang-format",
-    "ms-vscode.cpptools",
-    "cs128.cs128-clang-tidy"
+    "ms-vscode.cpptools"
   ]
 }

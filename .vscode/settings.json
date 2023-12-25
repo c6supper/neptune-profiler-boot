@@ -1,22 +1,38 @@
 {
   "cSpell.words": [
     "clockadjust",
+    "cmajflt",
+    "cminflt",
+    "cnswap",
     "cxxopts",
     "DEINITIALIZER",
+    "GETCPU",
+    "GETEVENT",
     "hypervisor",
+    "INTENTER",
+    "INTEXIT",
+    "itrealvalue",
+    "KERCALL",
+    "KERCALLENTER",
+    "KERCALLEXIT",
+    "KERCALLINT",
+    "kstkeip",
     "lpthread",
     "nproc",
     "qtime",
+    "rsslim",
     "SETEVENT",
     "softirq",
-    "SYSPAGE"
+    "startcode",
+    "startstack",
+    "SYSPAGE",
+    "traceevent",
+    "VTHREAD"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit"
   },
   "editor.formatOnSave": true,
-  "clang-format.style": "google",
-  "clang-format.language.c.enable": true,
   "[c]": {
     "editor.defaultFormatter": "xaver.clang-format",
     "editor.wordBasedSuggestions": "off",
@@ -85,7 +101,6 @@
     "mutex": "cpp",
     "thread": "cpp"
   },
-  "clang-tidy.buildPath": "./build",
   "editor.tabCompletion": "onlySnippets",
   "editor.snippetSuggestions": "inline",
   "emmet.showSuggestionsAsSnippets": true,
@@ -107,8 +122,10 @@
   "clang-tidy.blacklist": [
     "cxxopts.hpp"
   ],
-  "C_Cpp.codeAnalysis.clangTidy.config": "${workspaceFolder}/.clang-tidy",
+  // "C_Cpp.codeAnalysis.clangTidy.config": ".clang-tidy",
   "C_Cpp.errorSquiggles": "disabled",
   "C_Cpp.codeAnalysis.runAutomatically": true,
-  "clang-tidy.lintOnSave": true
+  "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
+    "bugprone-easily-swappable-parameters"
+  ],
 }

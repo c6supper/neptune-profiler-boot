@@ -8,7 +8,6 @@
 #include <thread>
 
 #include "arg.hpp"
-#include "unused.h"
 
 sigset_t make_sigset(std::initializer_list<int32_t> signals) {
   sigset_t set;

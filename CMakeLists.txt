@@ -74,6 +74,7 @@ if(OPTION_TARGET)
 
   file(GLOB_RECURSE SRC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.cpp"
   )
 
   message(DEBUG "CMAKE_CURRENT_LIST_DIR=${CMAKE_CURRENT_LIST_DIR}")
@@ -83,6 +84,7 @@ if(OPTION_TARGET)
   include_directories(
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/inc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc/**"
     "${CMAKE_CURRENT_SOURCE_DIR}/third_party/inc"
   )
 

@@ -238,8 +238,8 @@ enum {
 #define _NTO_TRACE_SETEVENT_C(c, cl) (c &= ~(0x1fu << 10), c |= (cl))
 #define _NTO_TRACE_GETEVENT_C(c) ((c) & (0x1fu << 10))
 #define _NTO_TRACE_SETEVENT(c, e) (c &= ~(0x3ffu), c |= (e))
-#define _NTO_TRACE_GETEVENT(c) ((unsigned)(c)&0x3ffu)
-#define _NTO_TRACE_GETCPU(h) (((h)&0x3f000000u) >> 24)
+#define _NTO_TRACE_GETEVENT(c) ((unsigned)(c) & 0x3ffu)
+#define _NTO_TRACE_GETCPU(h) (((h) & 0x3f000000u) >> 24)
 
 /* Query support flags */
 #define _NTO_TRACE_NOINSTRSUPP (0x00000000u)
@@ -338,7 +338,7 @@ typedef struct traceevent {
 #define _TRACE_GET_BUFFNUM(b) (b >> 13)
 #define _TRACE_GET_BUFFSEQ(b) (b & 0x000007FFu)
 
-#define _TRACE_GET_FLAG(c) ((unsigned)(c)&0x0fffffffu)
+#define _TRACE_GET_FLAG(c) ((unsigned)(c) & 0x0fffffffu)
 #define _TRACE_GET_COUNT(c) (((unsigned)(c) >> 28) & 0x7u)
 #define _TRACE_FLAGS_RING (0x00010000u)
 #define _TRACE_FLAGS_WRITING (0x00020000u)
