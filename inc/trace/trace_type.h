@@ -323,6 +323,11 @@ typedef struct traceevent {
 #define _TRACE_HEADER_PREFIX "TRACE_"
 #define _TRACE_HEADER_POSTFIX "::"
 
+#if defined(_TRACE_MK_HK)
+#undef _TRACE_MK_HK
+#endif
+#define _TRACE_MK_HK(k) _TRACE_HEADER_PREFIX #k _TRACE_HEADER_POSTFIX
+
 #define _TRACE_HEADER_KEYWORDS()                                            \
   _TRACE_MK_HK(HEADER_BEGIN), _TRACE_MK_HK(FILE_NAME), _TRACE_MK_HK(DATE),  \
       _TRACE_MK_HK(VER_MAJOR), _TRACE_MK_HK(VER_MINOR),                     \

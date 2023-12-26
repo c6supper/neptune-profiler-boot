@@ -12,8 +12,9 @@
 #include <string>
 #include <thread>
 
-#include "arg.hpp"
+#include "runtime.h"
 #include "trace/event_factory.h"
+#include "trace/trace_header.h"
 #include "trace/trace_type.h"
 
 sigset_t make_sigset(std::initializer_list<int32_t> signals) {
@@ -27,8 +28,8 @@ sigset_t make_sigset(std::initializer_list<int32_t> signals) {
 }
 
 int main(const int argc, const char* argv[]) {
-  auto options = parse(argc, argv);
-
+  auto options = RuntimeContext().create_option(argc, argv);
+#if 0
   if (!options) {
     exit(0);
   }
@@ -51,6 +52,7 @@ int main(const int argc, const char* argv[]) {
 
   coding_nerd::boot_perf::EventFactory::get();
 
+#else
   std::ifstream ifs("../log/tracelogger2_20200101103408.kev", std::ios::binary);
 
   char buff[2048];
@@ -59,9 +61,13 @@ int main(const int argc, const char* argv[]) {
 
   std::size_t const pos = str.find("TRACE_HEADER_END::");
   std::cout << "string found at position: " << static_cast<int>(pos) << "\n";
-  ifs.seekg(pos + std::strlen("TRACE_HEADER_END::") + 1 + 51984);
+
+  const coding_nerd::boot_perf::TraceHeader test(str);
+
+  ifs.seekg(pos + std::strlen("TRACE_HEADER_END::") + 51984);
+  // ifs.seekg(52546);
   std::cout << ifs.tellg() << "\n";
-#if 0
+
   traceevent event;
   while (!ifs.eof() || !ifs.fail() || !ifs.bad()) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -70,6 +76,8 @@ int main(const int argc, const char* argv[]) {
     if (std ::memcmp(&last_event, &event, sizeof(last_event)) == 0) {
       continue;
     }
+    printf("t:0x%08x CPU:%02d 0x%x:0x%x", event.data[0],
+           _NTO_TRACE_GETCPU(event.header), event.data[1], event.data[2]);
     last_event = event;
     switch (_TRACE_GET_STRUCT(event.header)) {
       case _TRACE_STRUCT_CC:

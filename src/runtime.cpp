@@ -1,20 +1,23 @@
-#ifndef ARG_H_
-#define ARG_H_
+#include "runtime.h"
 
 #include <iostream>
-#include <memory>
 
-#include "cxxopts.hpp"
+namespace coding_nerd::boot_perf {
 
-inline std::shared_ptr<cxxopts::Options> parse(const int argc,
-                                               const char* argv[]) {
-  auto options = std::make_shared<cxxopts::Options>(argv[0], "");
+Runtime& Runtime::Instance() {
+  static Runtime instance;
+  return instance;
+}
+
+// NOLINTBEGIN
+bool Runtime::create_option(int argc, const char* argv[]) {
+  options_ = std::make_shared<cxxopts::Options>(argv[0], "");
   try {
-    options->positional_help("[optional args]").show_positional_help();
+    options_->positional_help("[optional args]").show_positional_help();
 
     bool apple = false;
 
-    options->set_width(70)
+    options_->set_width(70)
         .set_tab_expansion()
         .allow_unrecognised_options()
         .add_options()("a,apple,ringo", "an apple",
@@ -49,15 +52,15 @@ inline std::shared_ptr<cxxopts::Options> parse(const int argc,
 #endif
         ;
 
-    options->add_options("Group")("c,compile", "compile")(
+    options_->add_options("Group")("c,compile", "compile")(
         "d,drop", "drop", cxxopts::value<std::vector<std::string>>());
 
-    options->parse_positional({"input", "output", "positional"});
+    options_->parse_positional({"input", "output", "positional"});
 
-    auto result = options->parse(argc, argv);
+    auto result = options_->parse(argc, argv);
 
     if (result.count("help")) {
-      std::cout << options->help({"", "Group"}) << std::endl;
+      std::cout << options_->help({"", "Group"}) << std::endl;
       goto EXIT_WITH_NULLPTR;
     }
 
@@ -134,21 +137,26 @@ inline std::shared_ptr<cxxopts::Options> parse(const int argc,
     auto arguments = result.arguments();
     std::cout << "Saw " << arguments.size() << " arguments" << std::endl;
 
-    std::cout << "Unmatched options: ";
+    std::cout << "Unmatched options_: ";
     for (const auto& option : result.unmatched()) {
       std::cout << "'" << option << "' ";
     }
     std::cout << std::endl;
   } catch (const cxxopts::exceptions::exception& e) {
-    std::cout << "error parsing options: " << e.what() << std::endl;
+    std::cout << "error parsing options_: " << e.what() << std::endl;
     goto EXIT_WITH_NULLPTR;
   }
 
-  return options;
+  return true;
 
 EXIT_WITH_NULLPTR:
-  options.reset();
-  return options;
+  options_.reset();
+  return false;
+}
+// NOLINTEND
+
+std::shared_ptr<cxxopts::Options> Runtime::get_option() {
+  return std::make_shared<cxxopts::Options>(*options_);
 }
 
-#endif  // ARG_H_
+}  // namespace coding_nerd::boot_perf
