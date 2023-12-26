@@ -6,7 +6,7 @@
 # INSTALL default: off
 option(INSTALL "Install neptune binaries and files" OFF)
 option(DOC "Generate and update the doc files" OFF)
-option(OPTION_CLANG_TIDY "Analyze code with clang-tidy." OFF)
+option(OPTION_CLANG_TIDY "Analyze code with clang-tidy." ON)
 option(OPTION_CPPCHECK "Analyze code with cppcheck." OFF)
 option(OPTION_TARGET "Build Target" ON)
 
