@@ -16,7 +16,7 @@ class EventFactory {
   EventFactory() = default;
   virtual ~EventFactory() = default;
 
-  static std::shared_ptr<EventFactory> get();
+  static std::shared_ptr<EventFactory> Get();
 
  private:
   std::mutex mapMutex_;

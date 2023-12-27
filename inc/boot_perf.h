@@ -34,13 +34,13 @@ class BootPerf final {
     std::ofstream stat("/tmp/proc_stat.log");
     // header_.open("/tmp/header");
 
-    registerRunnable(
+    RegisterRunnable(
         std::make_shared<ProcessDumper<std::ofstream>>(std::move(ps)));
 
-    registerRunnable(
+    RegisterRunnable(
         std::make_shared<StatDumper<std::ofstream>>(std::move(stat)));
 
-    BOOT_PERF_LOG("BootPerf Initialized!");
+    Verbose() << "BootPerf Initialized!";
   }
   ~BootPerf() = default;
   BootPerf(BootPerf&& other) noexcept = delete;
@@ -49,12 +49,12 @@ class BootPerf final {
   BootPerf& operator=(BootPerf const& other) = delete;
 
   template <typename Rep = int32_t, typename Period = std::milli>
-  void run(const std::chrono::duration<Rep, Period>& _period) {
+  void Run(const std::chrono::duration<Rep, Period>& _period) {
     while (running_) {
       const std::lock_guard<std::mutex> guard(protector_);
       auto iterator = runnable_.begin();
       for (; iterator != runnable_.end(); iterator++) {
-        (*iterator)->run();
+        (*iterator)->Run();
       }
       std::this_thread::sleep_for(_period);
     }
@@ -70,7 +70,7 @@ class BootPerf final {
   static void Start(const std::chrono::duration<Rep, Period>& _period) {
     Instance().running_ = true;
     Instance().collector_ =
-        std::thread([&] { Instance().run(std::move(_period)); });
+        std::thread([&] { Instance().Run(std::move(_period)); });
   }
 
   static void Stop() {
@@ -79,7 +79,7 @@ class BootPerf final {
   }
 
  private:
-  void registerRunnable(std::shared_ptr<Runnable>&& runnable) {
+  void RegisterRunnable(std::shared_ptr<Runnable>&& runnable) {
     const std::lock_guard<std::mutex> guard(protector_);
     runnable_.push_back(std::move(runnable));
   };

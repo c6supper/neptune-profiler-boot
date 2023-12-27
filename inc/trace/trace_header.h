@@ -1,6 +1,11 @@
 #ifndef TRACE_HEADER_H_
 #define TRACE_HEADER_H_
 
+#include <sys/types.h>
+
+#include <boost/optional.hpp>
+#include <boost/variant.hpp>
+#include <functional>
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -8,6 +13,7 @@
 
 namespace coding_nerd::boot_perf {
 class TraceHeader {
+  using AttributeType = boost::variant<uint32_t, std::string>;
   using type = TraceHeader;
 
  public:
@@ -17,13 +23,12 @@ class TraceHeader {
   TraceHeader(TraceHeader& other) = delete;
   TraceHeader& operator=(TraceHeader& other) = delete;
 
-  const std::string& attribute(const std::string& key);
+  boost::optional<AttributeType&> Attribute(const std::string& key);
 
  private:
-  std::unordered_map<std::string, std::string> attributes_map_;
+  std::unordered_map<std::string, AttributeType> attributes_map_;
   std::mutex attributes_mutex_;
   static std::vector<std::string> keys_;
-  static std::string empty_;
 };
 }  // namespace coding_nerd::boot_perf
 

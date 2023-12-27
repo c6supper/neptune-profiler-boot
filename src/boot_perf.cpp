@@ -12,11 +12,13 @@
 #include <string>
 #include <thread>
 
+#include "logger.h"
 #include "runtime.h"
 #include "trace/event_factory.h"
 #include "trace/trace_header.h"
 #include "trace/trace_type.h"
 
+// NOLINTBEGIN
 sigset_t make_sigset(std::initializer_list<int32_t> signals) {
   sigset_t set;
   const int32_t result = sigemptyset(&set);
@@ -26,6 +28,7 @@ sigset_t make_sigset(std::initializer_list<int32_t> signals) {
 
   return set;
 }
+// NOLINTEND
 
 int main(const int argc, const char* argv[]) {
   if (!RuntimeContext().CreateArg(argc, argv)) {
@@ -65,10 +68,8 @@ int main(const int argc, const char* argv[]) {
 
     const coding_nerd::boot_perf::TraceHeader test(str);
 
-    if (Verbose()) {
-      std::cout << "string found at position: " << static_cast<int>(pos)
-                << "\n";
-    }
+    Verbose() << "string found at position: " << static_cast<int>(pos) << "\n";
+
     ifs.seekg(pos + 51984);
     // ifs.seekg(52546);
 

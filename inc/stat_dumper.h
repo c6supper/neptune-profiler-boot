@@ -52,7 +52,7 @@ class StatDumper : public Dumper<void, Out>, public Runnable {
  public:
   explicit StatDumper(Out&& out) : out_(std::move(out)){};
   ~StatDumper() override = default;
-  void dump() override {
+  void Dump() override {
     out_ << BootPerfClock<void>::get_uptime_jiffies() << "\n";
 
     std::ifstream const ifstat(std::move("/proc/stat"));
@@ -61,7 +61,7 @@ class StatDumper : public Dumper<void, Out>, public Runnable {
     out_ << "\n";
   }
 
-  void run() override { dump(); };
+  void Run() override { Dump(); };
 
  private:
   Out out_;

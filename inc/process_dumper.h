@@ -97,7 +97,7 @@ class ProcessDumper : public Dumper<void, Out>, public Runnable {
  public:
   explicit ProcessDumper(Out&& out) : out_(std::move(out)){};
   ~ProcessDumper() override = default;
-  void dump() override {
+  void Dump() override {
     out_ << BootPerfClock<void>::get_uptime_jiffies() << "\n";
     const std::unique_ptr<DIR, int (*)(DIR*)> dir(opendir("/proc"), closedir);
     struct dirent* entry;
@@ -139,7 +139,7 @@ class ProcessDumper : public Dumper<void, Out>, public Runnable {
 
     out_ << "\n";
   };
-  void run() override { dump(); };
+  void Run() override { Dump(); };
 
  private:
   Out out_;

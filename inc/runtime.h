@@ -8,8 +8,6 @@
 #define RuntimeContext() coding_nerd::boot_perf::Runtime::Instance()
 #define ArgContext() coding_nerd::boot_perf::Runtime::Instance().GetArg()
 
-#define Verbose() (*ArgContext())["verbose"].as<bool>()
-
 #define Input() (*ArgContext())["input"].as<std::string>()
 
 namespace coding_nerd::boot_perf {

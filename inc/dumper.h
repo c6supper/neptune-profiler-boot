@@ -9,7 +9,7 @@ class Dumper {
  public:
   Dumper() = default;
   virtual ~Dumper() = default;
-  virtual void dump() = 0;
+  virtual void Dump() = 0;
 };
 }  // namespace coding_nerd::boot_perf
 

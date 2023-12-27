@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "logger.h"
+
 namespace coding_nerd::boot_perf {
 
 Runtime& Runtime::Instance() {
@@ -12,6 +14,7 @@ Runtime& Runtime::Instance() {
 // NOLINTBEGIN
 bool Runtime::CreateArg(int argc, const char* argv[]) {
   cxxopts::Options options(argv[0], "");
+  auto filter = boost::log::trivial::info;
   try {
     options.positional_help("[optional args]").show_positional_help();
 
@@ -37,6 +40,12 @@ bool Runtime::CreateArg(int argc, const char* argv[]) {
     std::cout << "error parsing options: " << e.what() << std::endl;
     goto EXIT_WITH_NULLPTR;
   }
+
+  // set log filter
+  if ((*args_)["verbose"].as<bool>()) {
+    filter = boost::log::trivial::trace;
+  }
+  boost::log::core::get()->set_filter(boost::log::trivial::severity >= filter);
 
   return true;
 

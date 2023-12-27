@@ -54,16 +54,6 @@ if(OPTION_TARGET)
     set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
-
-    set(Boost_USE_STATIC_LIBS ON) 
-    set(Boost_USE_MULTITHREADED ON)  
-    set(Boost_USE_STATIC_RUNTIME ON) 
-    find_package(Boost 1.71.0 COMPONENTS *boost libraries here*) 
-
-    if(Boost_FOUND)
-        include_directories(${Boost_INCLUDE_DIRS}) 
-        target_link_libraries(${target} ${Boost_LIBRARIES})
-    endif()
   endif()
 
 
@@ -93,7 +83,18 @@ if(OPTION_TARGET)
   )
 
   if(NOT DEFINED ${QNX})
-    target_link_libraries(${target} Threads::Threads)
+    target_link_libraries(${target} Threads::Threads ${Boost_LIBRARIES})
+  endif()
+
+  set(Boost_USE_STATIC_LIBS OFF) 
+  set(Boost_USE_MULTITHREADED ON)  
+  set(Boost_USE_STATIC_RUNTIME OFF) 
+  find_package(Boost 1.71.0 COMPONENTS filesystem log REQUIRED) 
+
+  if(Boost_FOUND)
+      MESSAGE( STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
+      include_directories(${Boost_INCLUDE_DIRS}) 
+      target_link_libraries(${target} ${Boost_LIBRARIES})
   endif()
 
   if(OPTION_CLANG_TIDY)

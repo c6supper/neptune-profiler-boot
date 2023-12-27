@@ -17,7 +17,7 @@ class KeyLogFileParser : public TraceParser<ifstream, Out> {
   KeyLogFileParser& operator=(KeyLogFileParser& other) = delete;
   explicit KeyLogFileParser(const std::string& input) {}
 
-  virtual void parse(){
+  virtual void Parse(){
 
   };
 

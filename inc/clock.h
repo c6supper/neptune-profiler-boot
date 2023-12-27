@@ -17,7 +17,7 @@ class BootPerfClock {
   BootPerfClock& operator=(BootPerfClock& other) = delete;
 
   // align with Android, 100hz, 1 jiffy = 10 ms
-  static uint64_t get_uptime_jiffies() {
+  static uint64_t get_uptime_jiffies() {  // NOLINT
     double uptime;
     std::ifstream file("/proc/uptime");
     file >> uptime;
