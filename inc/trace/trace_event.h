@@ -2,7 +2,9 @@
 #define TRACE_EVENT_H_
 
 #include <cstdint>
+#include <iostream>
 #include <memory>
+
 #include "trace_type.h"
 
 namespace coding_nerd::boot_perf {
@@ -19,8 +21,8 @@ class TraceEvent {
   TraceEvent& operator=(TraceEvent& other) = delete;
   TraceEvent(TraceEvent&& other) = default;
   explicit TraceEvent(std::shared_ptr<T>&& event) : event_(std::move(event)) {
-    to_ext(_NTO_TRACE_GETEVENT_C(event->header),
-           _NTO_TRACE_GETEVENT(event->header), &class_, &type_);
+    toExt(_NTO_TRACE_GETEVENT_C(event->header),
+          _NTO_TRACE_GETEVENT(event->header), &class_, &type_);
     cpu_ = _NTO_TRACE_GETCPU(event->header);
     timestamp_ = _NTO_TRACE_GETCPU(event->data[0]);
   };
@@ -32,8 +34,8 @@ class TraceEvent {
   cpu_type cpu_;
   uint32_t timestamp_;
 
-  static void to_ext(const class_type int_class, event_type int_event,
-                     class_type& ext_class, event_type& ext_event) {
+  static void toExt(const class_type int_class, event_type int_event,
+                    class_type& ext_class, event_type& ext_event) {
     int event_64 = 0;
 
     switch (int_class) {
@@ -67,7 +69,7 @@ class TraceEvent {
             break;
 
           default:
-            perror("Unknown Interrupt event: %d\n", int_event);
+            std::cerr << "Unknown Interrupt event: " << int_event << "\n";
         }
         break;
 
@@ -90,7 +92,7 @@ class TraceEvent {
           ext_class = _NTO_TRACE_KERCALLINT;
           ext_event = int_event - 2 * _TRACE_MAX_KER_CALL_NUM;
         } else {
-          perror("Unknown kernel event: %d\n", int_event);
+          std::cerr << "Unknown kernel event: " << int_event << "\n";
         }
 
         /* Add _NTO_TRACE_KERCALL64 to the external event if it was set for the
@@ -131,7 +133,7 @@ class TraceEvent {
         break;
 
       default:
-        perror("Unknown class: %d\n", int_class);
+        std::cerr << "Unknown class: " << int_class << "\n";
     }
   }
 };
