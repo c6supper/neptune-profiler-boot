@@ -24,12 +24,15 @@ class TraceHeader {
   TraceHeader(TraceHeader& other) = delete;
   TraceHeader& operator=(TraceHeader& other) = delete;
 
+  uint32_t CyclesPerSec() const;
+
   boost::optional<AttributeType&> Attribute(const std::string& key);
 
  private:
   std::unordered_map<std::string, AttributeType> attributes_map_;
   std::mutex attributes_mutex_;
   static std::vector<std::string> keys_;
+  uint32_t cycles_per_sec_;
 };
 }  // namespace coding_nerd::boot_perf
 

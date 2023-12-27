@@ -23,14 +23,17 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
   void Parse(std::ifstream& ifs) override {
     trace_header_ = std::make_unique<TraceHeader>(ifs);
     traceevent event;
+    static uint32_t timestamp = 0;
     while (!ifs.eof() || !ifs.fail() || !ifs.bad()) {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
       traceevent last_event;
       ifs.read(reinterpret_cast<char*>(&event), sizeof(event));
-      if (std ::memcmp(&last_event, &event, sizeof(last_event)) == 0) {
-        continue;
+      if (timestamp == 0) {
+        timestamp = event.data[0];
       }
-      printf("t:0x%08x CPU:%02d 0x%x:0x%x", event.data[0],
+      printf("t:%8uns CPU:%02d 0x%x:0x%x",
+             (event.data[0] - timestamp) *
+                 (1000 * 1000 * 1000 / trace_header_->CyclesPerSec()),
              _NTO_TRACE_GETCPU(event.header), event.data[1], event.data[2]);
       last_event = event;
       switch (_TRACE_GET_STRUCT(event.header)) {

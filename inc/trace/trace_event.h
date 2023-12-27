@@ -34,7 +34,7 @@ class TraceEvent {
   cpu_type cpu_;
   uint32_t timestamp_;
 
-  static void toExt(const class_type int_class, event_type int_event,
+  static void ToExt(const class_type int_class, event_type int_event,
                     class_type& ext_class, event_type& ext_event) {
     int event_64 = 0;
 

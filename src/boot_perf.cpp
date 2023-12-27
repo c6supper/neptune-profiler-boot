@@ -1,5 +1,6 @@
 #include "boot_perf.h"
 
+#include <boost/mpl/vector.hpp>
 #include <chrono>
 #include <csignal>
 #include <cstdio>
@@ -15,7 +16,6 @@
 #include "logger.h"
 #include "runtime.h"
 #include "trace/kev_log_file_parser.h"
-
 // NOLINTBEGIN
 sigset_t make_sigset(std::initializer_list<int32_t> signals) {
   sigset_t set;
@@ -32,6 +32,12 @@ int main(const int argc, const char* argv[]) {
   if (!RuntimeContext().CreateArg(argc, argv)) {
     exit(0);
   }
+
+  typedef boost::mpl::vector<std::string> types_initial;
+  typedef boost::mpl::push_front<types_initial, int>::type types;
+  const boost::make_variant_over<types>::type v1;
+
+  // boost::variant<int, std::string> v1;  // works
 
 #if 0
   BootPerfContext().Start<>(std::chrono::milliseconds(200));

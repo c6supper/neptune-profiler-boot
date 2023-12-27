@@ -20,7 +20,8 @@ class EventFactory {
 
  private:
   std::mutex mapMutex_;
-  std::map<uint32_t, std::vector<std::shared_ptr<traceevent>>> combinedEvent_;
+  std::map<uint32_t, std::vector<std::shared_ptr<const traceevent>>>
+      combinedEvent_;
 };
 }  // namespace coding_nerd::boot_perf
 

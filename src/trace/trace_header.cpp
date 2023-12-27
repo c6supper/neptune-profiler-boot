@@ -35,10 +35,15 @@ TraceHeader::TraceHeader(std::ifstream& ifs) {
   }
   boost::optional<TraceHeader::AttributeType> opt_page_len =
       attributes_map_[_TRACE_MK_HK(SYSPAGE_LEN)];
-  if (!opt_page_len) {
-    Fatal() << "Invalid key log file, syspage_len header missing!";
+  boost::optional<TraceHeader::AttributeType> opt_cycles_per_sec =
+      attributes_map_[_TRACE_MK_HK(CYCLES_PER_SEC)];
+
+  if (!opt_page_len || !opt_cycles_per_sec) {
+    Fatal() << "Invalid key log file, syspage_len or cycles_per_sec header "
+               "missing!";
   }
   const uint32_t page_len = boost::get<uint32_t>(*opt_page_len);
+  cycles_per_sec_ = boost::get<uint32_t>(*opt_cycles_per_sec);
   ifs.seekg(pos + page_len);
   Verbose() << "Found trace log header, end at pos = " << (pos + page_len);
 
@@ -46,6 +51,8 @@ TraceHeader::TraceHeader(std::ifstream& ifs) {
     Verbose() << ' ' << attr.first << attr.second << '\n';
   }
 }
+
+uint32_t TraceHeader::CyclesPerSec() const { return cycles_per_sec_; }
 
 boost::optional<TraceHeader::AttributeType&> TraceHeader::Attribute(
     const std::string& key) {
