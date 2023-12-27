@@ -5,37 +5,44 @@
 #include <iostream>
 #include <memory>
 
+#include "json.hpp"
+#include "logger.h"
 #include "trace_type.h"
 
 namespace coding_nerd::boot_perf {
 
 template <typename T>
-class TraceEvent {
-  using class_type = uint32_t;
-  using event_type = uint32_t;
-  using cpu_type = uint32_t;
-
- public:
+struct TraceEvent {
+  std::shared_ptr<T> event_;
   TraceEvent() = delete;
   TraceEvent(TraceEvent& other) = delete;
   TraceEvent& operator=(TraceEvent& other) = delete;
-  TraceEvent(TraceEvent&& other) = default;
-  explicit TraceEvent(std::shared_ptr<T>&& event) : event_(std::move(event)) {
-    toExt(_NTO_TRACE_GETEVENT_C(event->header),
-          _NTO_TRACE_GETEVENT(event->header), &class_, &type_);
-    cpu_ = _NTO_TRACE_GETCPU(event->header);
-    timestamp_ = _NTO_TRACE_GETCPU(event->data[0]);
-  };
+  TraceEvent(TraceEvent&& other) = delete;
+  virtual ~TraceEvent() = default;
+  explicit TraceEvent(std::shared_ptr<T> event) : event_(event){};  // NOLINT
 
- private:
-  const std::shared_ptr<T> event_;
-  class_type class_;
-  class_type type_;
-  cpu_type cpu_;
-  uint32_t timestamp_;
+  //  public:
+  //   TraceEvent() = delete;
+  //   TraceEvent(TraceEvent& other) = delete;
+  //   TraceEvent& operator=(TraceEvent& other) = delete;
+  //   TraceEvent(TraceEvent&& other) = default;
+  //   explicit TraceEvent(std::shared_ptr<T>&& event) :
+  //   event_(std::move(event)) {
+  //     toExt(_NTO_TRACE_GETEVENT_C(event->header),
+  //           _NTO_TRACE_GETEVENT(event->header), &class_, &type_);
+  //     cpu_ = _NTO_TRACE_GETCPU(event->header);
+  //     timestamp_ = _NTO_TRACE_GETCPU(event->data[0]);
+  //   };
 
-  static void ToExt(const class_type int_class, event_type int_event,
-                    class_type& ext_class, event_type& ext_event) {
+  //  private:
+  //   const std::shared_ptr<T> event_;
+  //   class_type class_;
+  //   class_type type_;
+  //   cpu_type cpu_;
+  //   uint32_t timestamp_;
+  // NOLINTBEGIN
+  static void ToExt(const uint32_t int_class, uint32_t int_event,
+                    uint32_t& ext_class, uint32_t& ext_event) {
     int event_64 = 0;
 
     switch (int_class) {
@@ -69,7 +76,7 @@ class TraceEvent {
             break;
 
           default:
-            std::cerr << "Unknown Interrupt event: " << int_event << "\n";
+            Warning() << "Unknown Interrupt event: " << int_event;
         }
         break;
 
@@ -92,7 +99,7 @@ class TraceEvent {
           ext_class = _NTO_TRACE_KERCALLINT;
           ext_event = int_event - 2 * _TRACE_MAX_KER_CALL_NUM;
         } else {
-          std::cerr << "Unknown kernel event: " << int_event << "\n";
+          Warning() << "Unknown kernel event: " << int_event;
         }
 
         /* Add _NTO_TRACE_KERCALL64 to the external event if it was set for the
@@ -133,10 +140,24 @@ class TraceEvent {
         break;
 
       default:
-        std::cerr << "Unknown class: " << int_class << "\n";
+        Warning() << "Unknown class: " << int_class;
     }
   }
 };
+
+template <typename T>
+void to_json(nlohmann::json& j, const TraceEvent<T>& e) {  // NOLINT
+  uint32_t ext_class;
+  uint32_t ext_event;
+  TraceEvent<T>::ToExt(_NTO_TRACE_GETEVENT_C(e.event_->header),
+                       _NTO_TRACE_GETEVENT(e.event_->header), ext_class,
+                       ext_event);
+  j = nlohmann::json{{"ts", e.event_->data[0]},
+                     {"cpu", _NTO_TRACE_GETCPU(e.event_->header)},
+                     {"class", ClassName[ext_class]},
+                     {"event", ext_event}};
+};
+// NOLINTEND
 }  // namespace coding_nerd::boot_perf
 
 #endif  // TRACE_EVENT_H_

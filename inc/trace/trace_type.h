@@ -109,6 +109,27 @@ enum {
   _NTO_TRACE_QVM
 };
 
+static const char* ClassName[] = {"NTO_TRACE_EMPTY",
+                                  "NTO_TRACE_CONTROL",
+                                  "NTO_TRACE_KERCALL",
+                                  "NTO_TRACE_KERCALLENTER",
+                                  "NTO_TRACE_KERCALLEXIT",
+                                  "NTO_TRACE_KERCALLINT",
+                                  "NTO_TRACE_INT",
+                                  "NTO_TRACE_INTENTER",
+                                  "NTO_TRACE_INTEXIT",
+                                  "NTO_TRACE_PROCESS",
+                                  "NTO_TRACE_THREAD",
+                                  "NTO_TRACE_VTHREAD",
+                                  "NTO_TRACE_USER",
+                                  "NTO_TRACE_SYSTEM",
+                                  "NTO_TRACE_COMM",
+                                  "NTO_TRACE_INT_HANDLER_ENTER",
+                                  "NTO_TRACE_INT_HANDLER_EXIT",
+                                  "NTO_TRACE_QUIP",
+                                  "NTO_TRACE_SEC",
+                                  "NTO_TRACE_QVM"};
+
 /* TraceEvent() - external events */
 #define _NTO_TRACE_EMPTYEVENT (0x00000000u)
 

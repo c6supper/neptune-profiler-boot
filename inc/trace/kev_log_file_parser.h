@@ -6,6 +6,7 @@
 
 #include "../logger.h"
 #include "event_factory.h"
+#include "process_event.h"
 #include "trace_header.h"
 #include "trace_parser.h"
 
@@ -22,21 +23,26 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
 
   void Parse(std::ifstream& ifs) override {
     trace_header_ = std::make_unique<TraceHeader>(ifs);
-    traceevent event;
+    auto event = std::make_shared<traceevent>();
     static uint32_t timestamp = 0;
     while (!ifs.eof() || !ifs.fail() || !ifs.bad()) {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
       traceevent last_event;
-      ifs.read(reinterpret_cast<char*>(&event), sizeof(event));
+      ifs.read(reinterpret_cast<char*>(event.get()), sizeof(traceevent));
       if (timestamp == 0) {
-        timestamp = event.data[0];
+        timestamp = event->data[0];
       }
+
+      const ProcessEvent<traceevent> pe(event);
+      const nlohmann::json j = pe;
+      std::cout << j << std::endl;
+
       printf("t:%8uns CPU:%02d 0x%x:0x%x",
-             (event.data[0] - timestamp) *
+             (event->data[0] - timestamp) *
                  (1000 * 1000 * 1000 / trace_header_->CyclesPerSec()),
-             _NTO_TRACE_GETCPU(event.header), event.data[1], event.data[2]);
-      last_event = event;
-      switch (_TRACE_GET_STRUCT(event.header)) {
+             _NTO_TRACE_GETCPU(event->header), event->data[1], event->data[2]);
+      last_event = *event;
+      switch (_TRACE_GET_STRUCT(event->header)) {
         case _TRACE_STRUCT_CC:
           printf("_TRACE_STRUCT_CC\n");
           break;
