@@ -8,5 +8,6 @@
 #define Verbose() BOOST_LOG_TRIVIAL(debug)
 #define Warning() BOOST_LOG_TRIVIAL(warning)
 #define Info() BOOST_LOG_TRIVIAL(info)
+#define Fatal() BOOST_LOG_TRIVIAL(fatal)
 
 #endif  // LOGGER_H_

@@ -5,6 +5,7 @@
 
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
+#include <fstream>
 #include <functional>
 #include <mutex>
 #include <string>
@@ -18,7 +19,7 @@ class TraceHeader {
 
  public:
   TraceHeader() = delete;
-  explicit TraceHeader(const std::string& header_str);
+  explicit TraceHeader(std::ifstream& ifs);
   ~TraceHeader() = default;
   TraceHeader(TraceHeader& other) = delete;
   TraceHeader& operator=(TraceHeader& other) = delete;

@@ -9,7 +9,7 @@ class TraceParser {
  public:
   TraceParser() = default;
   virtual ~TraceParser() = default;
-  virtual void parse() = 0;
+  virtual void Parse(In&) = 0;
 };
 }  // namespace coding_nerd::boot_perf
 
