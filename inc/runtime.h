@@ -5,8 +5,8 @@
 
 #include "cxxopts.hpp"
 
-#define RuntimeContext() coding_nerd::boot_perf::Runtime::Instance()
-#define ArgContext() coding_nerd::boot_perf::Runtime::Instance().GetArg()
+#define RuntimeContext() coding_nerd::boot_perf::Runtime::Singleton()
+#define ArgContext() coding_nerd::boot_perf::Runtime::Singleton().GetArg()
 
 #define Input() (*ArgContext())["input"].as<std::string>()
 
@@ -18,7 +18,7 @@ class Runtime {
   ~Runtime() = default;
   Runtime(Runtime& other) = delete;
   Runtime& operator=(Runtime& other) = delete;
-  static Runtime& Instance();
+  static Runtime& Singleton();
   bool CreateArg(int argc, const char* argv[]);
   std::shared_ptr<cxxopts::ParseResult> GetArg();
 

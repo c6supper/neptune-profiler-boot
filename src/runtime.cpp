@@ -6,7 +6,7 @@
 
 namespace coding_nerd::boot_perf {
 
-Runtime& Runtime::Instance() {
+Runtime& Runtime::Singleton() {
   static Runtime instance;
   return instance;
 }

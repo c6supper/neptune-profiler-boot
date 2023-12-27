@@ -24,7 +24,7 @@ class TraceHeader {
   TraceHeader(TraceHeader& other) = delete;
   TraceHeader& operator=(TraceHeader& other) = delete;
 
-  uint32_t CyclesPerSec() const;
+  uint32_t CyclesPerSec() const;  // NOLINT
 
   boost::optional<AttributeType&> Attribute(const std::string& key);
 

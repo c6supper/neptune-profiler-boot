@@ -23,7 +23,7 @@ enum {
 #include "runnable.h"
 #include "stat_dumper.h"
 
-#define BootPerfContext() coding_nerd::boot_perf::BootPerf::Instance()
+#define BootPerfContext() coding_nerd::boot_perf::BootPerf::Singleton()
 
 namespace coding_nerd::boot_perf {
 
@@ -60,7 +60,7 @@ class BootPerf final {
     }
   }
 
-  static auto& Instance() {
+  static auto& Singleton() {
     static BootPerf instance;
 
     return instance;
@@ -68,14 +68,14 @@ class BootPerf final {
 
   template <typename Rep = int32_t, typename Period = std::milli>
   static void Start(const std::chrono::duration<Rep, Period>& _period) {
-    Instance().running_ = true;
-    Instance().collector_ =
-        std::thread([&] { Instance().Run(std::move(_period)); });
+    Singleton().running_ = true;
+    Singleton().collector_ =
+        std::thread([&] { Singleton().Run(std::move(_period)); });
   }
 
   static void Stop() {
-    Instance().running_ = false;
-    Instance().collector_.join();
+    Singleton().running_ = false;
+    Singleton().collector_.join();
   }
 
  private:

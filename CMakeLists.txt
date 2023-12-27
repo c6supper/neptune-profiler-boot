@@ -6,7 +6,7 @@
 # INSTALL default: off
 option(INSTALL "Install neptune binaries and files" OFF)
 option(DOC "Generate and update the doc files" OFF)
-option(OPTION_CLANG_TIDY "Analyze code with clang-tidy." ON)
+option(OPTION_CLANG_TIDY "Analyze code with clang-tidy." OFF)
 option(OPTION_CPPCHECK "Analyze code with cppcheck." OFF)
 option(OPTION_TARGET "Build Target" ON)
 
@@ -37,6 +37,9 @@ if(OPTION_TARGET)
   set(CXXOPTS "${CMAKE_SOURCE_DIR}/third_party/inc/cxxopts.hpp")
   set(CXXOPTS_URL "https://raw.githubusercontent.com/jarro2783/cxxopts/v3.1.1/include/cxxopts.hpp")
 
+  set(JSON "${CMAKE_SOURCE_DIR}/third_party/inc/json.hpp")
+  set(JSON_URL "https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp")
+
   file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/third_party/inc)
 
   if(EXISTS "${CXXOPTS}")
@@ -46,6 +49,15 @@ if(OPTION_TARGET)
 
     # Actually download the file
     download_file_https(${CXXOPTS_URL} ${CXXOPTS} TRUE)
+  endif()
+
+  if(EXISTS "${JSON}")
+    message(STATUS "Using cached JSON at ${JSON}")
+  else()
+    message("Downloading ${JSON_URL} -> ${JSON}")
+
+    # Actually download the file
+    download_file_https(${JSON_URL} ${JSON} TRUE)
   endif()
 
   set(CMAKE_CXX_STANDARD 17)
