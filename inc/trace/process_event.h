@@ -12,7 +12,9 @@ struct ProcessEvent : TraceEvent<T> {
   ProcessEvent& operator=(ProcessEvent& other) = delete;
   ProcessEvent(ProcessEvent&& other) = delete;
   ~ProcessEvent() override = default;
-  explicit ProcessEvent(std::shared_ptr<T> event) : TraceEvent<T>(event){};
+  explicit ProcessEvent(std::shared_ptr<T>& event,
+                        std::shared_ptr<TraceClock>& clock)
+      : TraceEvent<T>(event, clock){};
 };
 
 template <typename T>

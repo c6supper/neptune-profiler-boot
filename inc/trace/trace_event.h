@@ -7,6 +7,7 @@
 
 #include "json.hpp"
 #include "logger.h"
+#include "trace_clock.h"
 #include "trace_type.h"
 
 namespace coding_nerd::boot_perf {
@@ -14,12 +15,15 @@ namespace coding_nerd::boot_perf {
 template <typename T>
 struct TraceEvent {
   std::shared_ptr<T> event_;
+  std::shared_ptr<TraceClock> clock_;
   TraceEvent() = delete;
   TraceEvent(TraceEvent& other) = delete;
   TraceEvent& operator=(TraceEvent& other) = delete;
   TraceEvent(TraceEvent&& other) = delete;
   virtual ~TraceEvent() = default;
-  explicit TraceEvent(std::shared_ptr<T> event) : event_(event){};  // NOLINT
+  explicit TraceEvent(std::shared_ptr<T>& event,
+                      std::shared_ptr<TraceClock>& clock)
+      : event_(event), clock_(clock){};  // NOLINT
 
   //  public:
   //   TraceEvent() = delete;
@@ -152,10 +156,11 @@ void to_json(nlohmann::json& j, const TraceEvent<T>& e) {  // NOLINT
   TraceEvent<T>::ToExt(_NTO_TRACE_GETEVENT_C(e.event_->header),
                        _NTO_TRACE_GETEVENT(e.event_->header), ext_class,
                        ext_event);
-  j = nlohmann::json{{"ts", e.event_->data[0]},
-                     {"cpu", _NTO_TRACE_GETCPU(e.event_->header)},
-                     {"class", ClassName[ext_class]},
-                     {"event", ext_event}};
+  j = nlohmann::json{
+      {"ts", e.clock_->NanoSinceBootFromCycle(e.event_->data[0]).count()},
+      {"cpu", _NTO_TRACE_GETCPU(e.event_->header)},
+      {"class", ClassName[ext_class]},
+      {"event", ext_event}};
 };
 // NOLINTEND
 }  // namespace coding_nerd::boot_perf

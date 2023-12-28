@@ -37,7 +37,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       trace_clock_->SetTraceBootCycle(event->data[0]);
       trace_clock_->SetCyclePerSec(trace_header_->CyclesPerSec());
 
-      const ProcessEvent<traceevent> pe(event);
+      const ProcessEvent<traceevent> pe(event, trace_clock_);
       const nlohmann::json j = pe;
       std::cout << j << std::endl;
 
