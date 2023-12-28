@@ -41,13 +41,18 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       if (Verbose()) {
         TraceEvent<traceevent>::Dump(*event, *trace_clock_);
       }
+      nlohmann::json json;
+      event_json_factory_->Convert(json, *event, *trace_clock_);
+      if (!json.empty()) {
+        VerboseLogger() << json;
+      }
     }
   }
 
  private:
   std::unique_ptr<TraceHeader> trace_header_;
   std::shared_ptr<TraceClock> trace_clock_;
-  std::unique_ptr<EventFactory<nlohmann::json, traceevent>> event_json_factory_;
+  std::shared_ptr<EventFactory<nlohmann::json, traceevent>> event_json_factory_;
 };
 
 }  // namespace coding_nerd::boot_perf

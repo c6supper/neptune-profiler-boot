@@ -4,6 +4,7 @@
 #include "event_factory.h"
 #include "trace_event.h"
 #include "trace_parser.h"
+#include "trace_type.h"
 namespace coding_nerd::boot_perf {
 
 template <typename T>
@@ -22,7 +23,9 @@ struct ProcessEvent : TraceEvent<T> {
     TraceEvent<T>::ToJson(j, e, trace_clock);
   };
 };
-template <typename T>
-DoRegisterConverter<nlohmann::json, T> process_json_converter;
+
+static DoRegisterConverter<nlohmann::json, traceevent> process_json_converter{
+    _NTO_TRACE_PROCESS, ProcessEvent<traceevent>::ToJson};
+
 }  // namespace coding_nerd::boot_perf
 #endif  // PROCESS_EVENT_H_

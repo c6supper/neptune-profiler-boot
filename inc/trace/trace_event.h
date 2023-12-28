@@ -127,6 +127,11 @@ struct TraceEvent {
         WarningLogger() << "Unknown class: " << int_class;
     }
   }
+
+  static void ToExt(const T& e, uint32_t& ext_class, uint32_t& ext_event) {
+    ToExt(_NTO_TRACE_GETEVENT_C(e.header), _NTO_TRACE_GETEVENT(e.header),
+          ext_class, ext_event);
+  };
   static void Dump(const T& event, const TraceClock& trace_clock) {
     printf("t:%8ld ns CPU:%02d 0x%-8x:0x%-8x",
            trace_clock.NanoSinceBootFromCycle(event.data[0]).count(),
@@ -153,8 +158,7 @@ struct TraceEvent {
                      const TraceClock& trace_clock) {
     uint32_t ext_class;
     uint32_t ext_event;
-    TraceEvent<T>::ToExt(_NTO_TRACE_GETEVENT_C(e.header),
-                         _NTO_TRACE_GETEVENT(e.header), ext_class, ext_event);
+    TraceEvent<T>::ToExt(e, ext_class, ext_event);
     j = nlohmann::json{
         {"ts", trace_clock.NanoSinceBootFromCycle(e.data[0]).count()},
         {"cpu", _NTO_TRACE_GETCPU(e.header)},
