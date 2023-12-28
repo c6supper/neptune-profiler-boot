@@ -31,36 +31,15 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
 
     while (!ifs.eof() || !ifs.fail() || !ifs.bad()) {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      traceevent last_event;
       ifs.read(reinterpret_cast<char*>(event.get()), sizeof(traceevent));
 
       trace_clock_->SetTraceBootCycle(event->data[0]);
       trace_clock_->SetCyclePerSec(trace_header_->CyclesPerSec());
 
-      const ProcessEvent<traceevent> pe(event, trace_clock_);
-      const nlohmann::json j = pe;
-      std::cout << j << std::endl;
-
-      printf("t:%8ld ns CPU:%02d 0x%x:0x%x",
-             trace_clock_->NanoSinceBootFromCycle(event->data[0]).count(),
-             _NTO_TRACE_GETCPU(event->header), event->data[1], event->data[2]);
-      last_event = *event;
-      switch (_TRACE_GET_STRUCT(event->header)) {
-        case _TRACE_STRUCT_CC:
-          printf("_TRACE_STRUCT_CC\n");
-          break;
-        case _TRACE_STRUCT_CB:
-          printf("_TRACE_STRUCT_CB\n");
-          break;
-        case _TRACE_STRUCT_S:
-          printf("_TRACE_STRUCT_S\n");
-          break;
-        case _TRACE_STRUCT_CE:
-          printf("_TRACE_STRUCT_CE\n");
-          break;
-        default:
-          break;
-      }
+      TraceEvent<traceevent>::Dump(*event, *trace_clock_);
+      // const ProcessEvent<traceevent> pe(event, trace_clock_);
+      // const nlohmann::json j = pe;
+      // std::cout << j << std::endl;
     }
   }
 

@@ -22,29 +22,9 @@ struct TraceEvent {
   TraceEvent(TraceEvent&& other) = delete;
   virtual ~TraceEvent() = default;
   explicit TraceEvent(std::shared_ptr<T>& event,
-                      std::shared_ptr<TraceClock>& clock)
-      : event_(event), clock_(clock){};  // NOLINT
-
-  //  public:
-  //   TraceEvent() = delete;
-  //   TraceEvent(TraceEvent& other) = delete;
-  //   TraceEvent& operator=(TraceEvent& other) = delete;
-  //   TraceEvent(TraceEvent&& other) = default;
-  //   explicit TraceEvent(std::shared_ptr<T>&& event) :
-  //   event_(std::move(event)) {
-  //     toExt(_NTO_TRACE_GETEVENT_C(event->header),
-  //           _NTO_TRACE_GETEVENT(event->header), &class_, &type_);
-  //     cpu_ = _NTO_TRACE_GETCPU(event->header);
-  //     timestamp_ = _NTO_TRACE_GETCPU(event->data[0]);
-  //   };
-
-  //  private:
-  //   const std::shared_ptr<T> event_;
-  //   class_type class_;
-  //   class_type type_;
-  //   cpu_type cpu_;
-  //   uint32_t timestamp_;
-  // NOLINTBEGIN
+                      std::shared_ptr<TraceClock>& trace_clock_)
+      : event_(event), clock_(trace_clock_){};  // NOLINT
+                                                // NOLINTBEGIN
   static void ToExt(const uint32_t int_class, uint32_t int_event,
                     uint32_t& ext_class, uint32_t& ext_event) {
     int event_64 = 0;
@@ -145,6 +125,27 @@ struct TraceEvent {
 
       default:
         Warning() << "Unknown class: " << int_class;
+    }
+  }
+  static void Dump(const T& event, const TraceClock& trace_clock) {
+    printf("t:%8ld ns CPU:%02d 0x%8x:0x%8x",
+           trace_clock.NanoSinceBootFromCycle(event.data[0]).count(),
+           _NTO_TRACE_GETCPU(event.header), event.data[1], event.data[2]);
+    switch (_TRACE_GET_STRUCT(event.header)) {
+      case _TRACE_STRUCT_CC:
+        printf("_TRACE_STRUCT_CC\n");
+        break;
+      case _TRACE_STRUCT_CB:
+        printf("_TRACE_STRUCT_CB\n");
+        break;
+      case _TRACE_STRUCT_S:
+        printf("_TRACE_STRUCT_S\n");
+        break;
+      case _TRACE_STRUCT_CE:
+        printf("_TRACE_STRUCT_CE\n");
+        break;
+      default:
+        break;
     }
   }
 };
