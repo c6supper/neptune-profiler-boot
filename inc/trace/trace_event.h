@@ -128,10 +128,17 @@ struct TraceEvent {
     }
   }
 
-  static void ToExt(const T& e, uint32_t& ext_class, uint32_t& ext_event) {
+  static void ToExt(std::enable_if<!std::is_array<T>::value, T&> e,
+                    uint32_t& ext_class, uint32_t& ext_event) {
     ToExt(_NTO_TRACE_GETEVENT_C(e.header), _NTO_TRACE_GETEVENT(e.header),
           ext_class, ext_event);
   };
+  static void ToExt(std::enable_if<std::is_array<T>::value, T&> e,
+                    uint32_t& ext_class, uint32_t& ext_event) {
+    ToExt(_NTO_TRACE_GETEVENT_C(e[0].header), _NTO_TRACE_GETEVENT(e[0].header),
+          ext_class, ext_event);
+  };
+
   static void Dump(const T& event, const TraceClock& trace_clock) {
     printf("t:%8ld ns CPU:%02d 0x%-8x:0x%-8x",
            trace_clock.NanoSinceBootFromCycle(event.data[0]).count(),
@@ -154,7 +161,8 @@ struct TraceEvent {
     }
   }
 
-  static void ToJson(nlohmann::json& j, const T& e,
+  static void ToJson(nlohmann::json& j,
+                     std::enable_if<!std::is_array<T>::value, T&> e,
                      const TraceClock& trace_clock) {
     uint32_t ext_class;
     uint32_t ext_event;
@@ -166,10 +174,9 @@ struct TraceEvent {
         {"event", ext_event}};
   }
 
-  static void ToJson(
-      nlohmann::json& j,
-      typename std::enable_if<std::is_array<T>::value, const T&> e,
-      const TraceClock& trace_clock) {
+  static void ToJson(nlohmann::json& j,
+                     std::enable_if<std::is_array<T>::value, T&> e,
+                     const TraceClock& trace_clock) {
     uint32_t ext_class;
     uint32_t ext_event;
     TraceEvent<T>::ToExt(_NTO_TRACE_GETEVENT_C(e[0]->header),
