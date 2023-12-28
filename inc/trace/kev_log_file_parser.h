@@ -39,9 +39,6 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       if (Verbose()) {
         TraceEvent<traceevent>::Dump(*event, *trace_clock_);
       }
-      // const ProcessEvent<traceevent> pe(event, trace_clock_);
-      // const nlohmann::json j = pe;
-      // std::cout << j << std::endl;
     }
   }
 

@@ -52,8 +52,6 @@ int main(const int argc, const char* argv[]) {
 
   BootPerfContext().Stop();
 
-  coding_nerd::boot_perf::EventFactory::get();
-
 #else
 
   try {
