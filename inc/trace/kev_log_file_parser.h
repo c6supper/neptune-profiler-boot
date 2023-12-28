@@ -27,6 +27,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
 
   void Parse(std::ifstream& ifs) override {
     trace_header_ = std::make_unique<TraceHeader>(ifs);
+    trace_clock_->SetCyclePerSec(trace_header_->CyclesPerSec());
     auto event = std::make_shared<traceevent>();
 
     while (!ifs.eof() || !ifs.fail() || !ifs.bad()) {
@@ -34,9 +35,10 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       ifs.read(reinterpret_cast<char*>(event.get()), sizeof(traceevent));
 
       trace_clock_->SetTraceBootCycle(event->data[0]);
-      trace_clock_->SetCyclePerSec(trace_header_->CyclesPerSec());
 
-      TraceEvent<traceevent>::Dump(*event, *trace_clock_);
+      if (Verbose()) {
+        TraceEvent<traceevent>::Dump(*event, *trace_clock_);
+      }
       // const ProcessEvent<traceevent> pe(event, trace_clock_);
       // const nlohmann::json j = pe;
       // std::cout << j << std::endl;

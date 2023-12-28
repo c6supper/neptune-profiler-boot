@@ -60,7 +60,7 @@ struct TraceEvent {
             break;
 
           default:
-            Warning() << "Unknown Interrupt event: " << int_event;
+            WarningLogger() << "Unknown Interrupt event: " << int_event;
         }
         break;
 
@@ -83,7 +83,7 @@ struct TraceEvent {
           ext_class = _NTO_TRACE_KERCALLINT;
           ext_event = int_event - 2 * _TRACE_MAX_KER_CALL_NUM;
         } else {
-          Warning() << "Unknown kernel event: " << int_event;
+          WarningLogger() << "Unknown kernel event: " << int_event;
         }
 
         /* Add _NTO_TRACE_KERCALL64 to the external event if it was set for the
@@ -124,25 +124,25 @@ struct TraceEvent {
         break;
 
       default:
-        Warning() << "Unknown class: " << int_class;
+        WarningLogger() << "Unknown class: " << int_class;
     }
   }
   static void Dump(const T& event, const TraceClock& trace_clock) {
-    printf("t:%8ld ns CPU:%02d 0x%8x:0x%8x",
+    printf("t:%8ld ns CPU:%02d 0x%-8x:0x%-8x",
            trace_clock.NanoSinceBootFromCycle(event.data[0]).count(),
            _NTO_TRACE_GETCPU(event.header), event.data[1], event.data[2]);
     switch (_TRACE_GET_STRUCT(event.header)) {
       case _TRACE_STRUCT_CC:
-        printf("_TRACE_STRUCT_CC\n");
+        printf("%-s\n", "_TRACE_STRUCT_CC");
         break;
       case _TRACE_STRUCT_CB:
-        printf("_TRACE_STRUCT_CB\n");
+        printf("%-s\n", "_TRACE_STRUCT_CB");
         break;
       case _TRACE_STRUCT_S:
-        printf("_TRACE_STRUCT_S\n");
+        printf("%-s\n", "_TRACE_STRUCT_S");
         break;
       case _TRACE_STRUCT_CE:
-        printf("_TRACE_STRUCT_CE\n");
+        printf("%-s\n", "_TRACE_STRUCT_CE");
         break;
       default:
         break;

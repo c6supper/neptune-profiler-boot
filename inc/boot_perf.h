@@ -40,7 +40,7 @@ class BootPerf final {
     RegisterRunnable(
         std::make_shared<StatDumper<std::ofstream>>(std::move(stat)));
 
-    Verbose() << "BootPerf Initialized!";
+    VerboseLogger() << "BootPerf Initialized!";
   }
   ~BootPerf() = default;
   BootPerf(BootPerf&& other) noexcept = delete;
