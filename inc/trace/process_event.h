@@ -2,6 +2,7 @@
 #define PROCESS_EVENT_H_
 
 #include "trace_event.h"
+#include "trace_parser.h"
 namespace coding_nerd::boot_perf {
 
 template <typename T>
