@@ -55,9 +55,6 @@ class EventFactory {
     if (auto search = converterMap_.find(ext_class);
         search != converterMap_.end())
       search->second(c, e, clock);
-    else
-      VerboseLogger() << "Unknown e, class = " << ClassName[ext_class]
-                      << ", event = " << ext_event;
   };
 
  private:

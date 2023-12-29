@@ -106,7 +106,8 @@ enum {
   _NTO_TRACE_INT_HANDLER_EXIT,
   _NTO_TRACE_QUIP,
   _NTO_TRACE_SEC,
-  _NTO_TRACE_QVM
+  _NTO_TRACE_QVM,
+  _NTO_TRACE_UNKOWN
 };
 
 static const char* ClassName[] = {"NTO_TRACE_EMPTY",
@@ -128,7 +129,8 @@ static const char* ClassName[] = {"NTO_TRACE_EMPTY",
                                   "NTO_TRACE_INT_HANDLER_EXIT",
                                   "NTO_TRACE_QUIP",
                                   "NTO_TRACE_SEC",
-                                  "NTO_TRACE_QVM"};
+                                  "NTO_TRACE_QVM",
+                                  "_NTO_TRACE_UNKOWN"};
 
 /* TraceEvent() - external events */
 #define _NTO_TRACE_EMPTYEVENT (0x00000000u)

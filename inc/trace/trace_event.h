@@ -60,6 +60,8 @@ struct TraceEvent {
             break;
 
           default:
+            ext_class = _NTO_TRACE_UNKOWN;
+            ext_event = _NTO_TRACE_MAX_CODES;
             WarningLogger() << "Unknown Interrupt event: " << int_event;
         }
         break;
@@ -83,6 +85,8 @@ struct TraceEvent {
           ext_class = _NTO_TRACE_KERCALLINT;
           ext_event = int_event - 2 * _TRACE_MAX_KER_CALL_NUM;
         } else {
+          ext_class = _NTO_TRACE_UNKOWN;
+          ext_event = _NTO_TRACE_MAX_CODES;
           WarningLogger() << "Unknown kernel event: " << int_event;
         }
 
@@ -124,6 +128,8 @@ struct TraceEvent {
         break;
 
       default:
+        ext_class = _NTO_TRACE_UNKOWN;
+        ext_event = _NTO_TRACE_MAX_CODES;
         WarningLogger() << "Unknown class: " << int_class;
     }
   }

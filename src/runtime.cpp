@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "cxxopts.hpp"
 #include "logger.h"
 
 namespace coding_nerd::boot_perf {
@@ -18,18 +19,20 @@ bool Runtime::CreateArg(int argc, const char* argv[]) {
   try {
     options.positional_help("[optional args]").show_positional_help();
 
-    bool verbose = true;
+    bool verbose = false;
     options.set_width(70)
         .set_tab_expansion()
         .allow_unrecognised_options()
         .add_options()("v,verbose", "Enable verbose log",
-                       cxxopts::value<bool>()->default_value("true"))(
+                       cxxopts::value<bool>()->default_value("false"))(
             "i,input", "Input Trace File", cxxopts::value<std::string>())(
+            "o,output", "Output Trace File", cxxopts::value<std::string>())(
             "h,help", "Print usage");
     options.parse_positional({"input"});
+    options.parse_positional({"output"});
     args_ = std::make_shared<cxxopts::ParseResult>(options.parse(argc, argv));
 
-    if (args_->count("input") <= 0) {
+    if (args_->count("input") <= 0 || args_->count("output") <= 0) {
       goto EXIT_WITH_NULLPTR;
     }
 

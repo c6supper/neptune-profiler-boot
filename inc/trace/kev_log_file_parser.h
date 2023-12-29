@@ -1,16 +1,20 @@
 #ifndef KEV_LOG_PARSER_H_
 #define KEV_LOG_PARSER_H_
 
+#include <cstdint>
 #include <fstream>
 #include <map>
 #include <memory>
+#include <mutex>
+#include <utility>
 #include <vector>
 
 #include "../logger.h"
-#include "clock.h"
 #include "event_factory.h"
-#include "process_event.h"
+#include "json.hpp"
 #include "trace/trace_clock.h"
+#include "trace/trace_event.h"
+#include "trace/trace_type.h"
 #include "trace_header.h"
 #include "trace_parser.h"
 
@@ -41,7 +45,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
 
       if (Verbose()) {
         TraceEvent<traceevent>::Dump(*event, *trace_clock_);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
       nlohmann::json json;
       const uint32_t timestamp = event->data[0];
@@ -70,8 +74,13 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
           break;
       }
 
-      if (!json.empty()) {
+      const std::string output = std::move(Output());
+
+      if (!json.empty() && output.empty()) {
         VerboseLogger() << json;
+      } else {
+        std::ofstream ofs(std::move(output), std::ios::binary);
+        ofs << json;
       }
     }
   }

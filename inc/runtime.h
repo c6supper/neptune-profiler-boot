@@ -9,6 +9,7 @@
 #define ArgContext() coding_nerd::boot_perf::Runtime::Singleton().GetArg()
 
 #define Input() (*ArgContext())["input"].as<std::string>()
+#define Output() (*ArgContext())["output"].as<std::string>()
 #define Verbose() (*ArgContext())["verbose"].as<bool>()
 
 namespace coding_nerd::boot_perf {
