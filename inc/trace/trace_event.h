@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <mutex>
 
 #include "json.hpp"
 #include "logger.h"
@@ -62,7 +63,7 @@ struct TraceEvent {
           default:
             ext_class = _NTO_TRACE_UNKOWN;
             ext_event = _NTO_TRACE_MAX_CODES;
-            WarningLogger() << "Unknown Interrupt event: " << int_event;
+            VerboseLogger() << "Unknown Interrupt event: " << int_event;
         }
         break;
 
@@ -87,7 +88,7 @@ struct TraceEvent {
         } else {
           ext_class = _NTO_TRACE_UNKOWN;
           ext_event = _NTO_TRACE_MAX_CODES;
-          WarningLogger() << "Unknown kernel event: " << int_event;
+          VerboseLogger() << "Unknown kernel event: " << int_event;
         }
 
         /* Add _NTO_TRACE_KERCALL64 to the external event if it was set for the
@@ -130,7 +131,7 @@ struct TraceEvent {
       default:
         ext_class = _NTO_TRACE_UNKOWN;
         ext_event = _NTO_TRACE_MAX_CODES;
-        WarningLogger() << "Unknown class: " << int_class;
+        VerboseLogger() << "Unknown class: " << int_class;
     }
   }
 
@@ -185,6 +186,7 @@ struct TraceEvent {
     TraceEvent<T>::ToExt(_NTO_TRACE_GETEVENT_C(e[0].header),
                          _NTO_TRACE_GETEVENT(e[0].header), ext_class,
                          ext_event);
+
     j = nlohmann::json{
         {"ts", trace_clock.NanoSinceBootFromCycle(e[0].data[0]).count()},
         {"cpu", _NTO_TRACE_GETCPU(e[0].header)},

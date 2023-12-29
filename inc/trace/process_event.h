@@ -22,14 +22,10 @@ struct ProcessEvent : TraceEvent<T> {
                         std::shared_ptr<TraceClock>& clock)
       : TraceEvent<T>(event, clock){};
 
-  static void ToJson(nlohmann::json& j, T& e, const TraceClock& trace_clock) {
-    TraceEvent<T>::ToJson(j, e, trace_clock);
-  };
-
   static void ToJson(nlohmann::json& j, std::vector<T>& e,
                      const TraceClock& trace_clock) {
     TraceEvent<T>::ToJson(j, e, trace_clock);
-    VerboseLogger() << e.size();
+    VerboseLogger() << "ProcessEvent" << j;
   };
 };
 

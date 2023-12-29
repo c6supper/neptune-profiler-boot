@@ -53,8 +53,11 @@ class EventFactory {
     TraceEvent<T>::ToExt(e[0], ext_class, ext_event);
     const std::lock_guard<std::mutex> lock(converterMapMutex_);
     if (auto search = converterMap_.find(ext_class);
-        search != converterMap_.end())
+        search != converterMap_.end()) {
       search->second(c, e, clock);
+    } else
+      VerboseLogger() << "Unknown e, class = " << ClassName[ext_class]
+                      << ", event = " << ext_event;
   };
 
  private:
@@ -66,6 +69,7 @@ struct DoRegisterConverter {
   DoRegisterConverter(const uint32_t &c,
                       typename EventFactory<C, T>::ConverterType *converter) {
     EventFactory<C, T>::Instance()->RegisterConverter(c, converter);
+    VerboseLogger() << "DoRegisterConverter for " << c;
   };
 };
 }  // namespace coding_nerd::boot_perf

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <fstream>
+#include <future>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -12,6 +13,7 @@
 #include "../logger.h"
 #include "event_factory.h"
 #include "json.hpp"
+#include "process_event.h"
 #include "trace/trace_clock.h"
 #include "trace/trace_event.h"
 #include "trace/trace_type.h"
@@ -37,52 +39,61 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
     trace_header_ = std::make_unique<TraceHeader>(ifs);
     trace_clock_->SetCyclePerSec(trace_header_->CyclesPerSec());
 
+    std::vector<std::future<void>> futures;
+    const std::string output = std::move(Output());
+    std::ofstream ofs(output, std::ios::binary);
+    ofs << "{\"traceEvents\": [";
     while (!ifs.eof() || !ifs.fail() || !ifs.bad()) {
       auto event = std::make_shared<traceevent>();
       ifs.read(reinterpret_cast<char*>(event.get()), sizeof(traceevent));
 
       trace_clock_->SetTraceBootCycle(event->data[0]);
 
-      if (Verbose()) {
-        TraceEvent<traceevent>::Dump(*event, *trace_clock_);
-        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      }
-      nlohmann::json json;
-      const uint32_t timestamp = event->data[0];
-      std::vector<traceevent> ev;
-      switch (_TRACE_GET_STRUCT(event->header)) {
-        case _TRACE_STRUCT_CC:
-        case _TRACE_STRUCT_CB:
-          composing_lock_.lock();
-          composing_event_map_[timestamp].push_back(std::move(*event));
-          composing_lock_.unlock();
-          break;
-        case _TRACE_STRUCT_S:
-          ev.push_back(std::move(*event));
-          event_json_factory_->Convert(json, ev, *trace_clock_);
-          break;
-        case _TRACE_STRUCT_CE:
-          composing_lock_.lock();
+      auto parse = [&, event]() {
+        nlohmann::json json;
+        if (Verbose()) {
+          TraceEvent<traceevent>::Dump(*event, *trace_clock_);
+          // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        const uint32_t timestamp = event->data[0];
+        std::vector<traceevent> ev;
+        switch (_TRACE_GET_STRUCT(event->header)) {
+          case _TRACE_STRUCT_CC:
+          case _TRACE_STRUCT_CB:
+            composing_lock_.lock();
+            composing_event_map_[timestamp].push_back(std::move(*event));
+            composing_lock_.unlock();
+            break;
+          case _TRACE_STRUCT_S:
+            ev.push_back(std::move(*event));
+            event_json_factory_->Convert(json, ev, *trace_clock_);
+            break;
+          case _TRACE_STRUCT_CE:
+            composing_lock_.lock();
 
-          composing_event_map_[timestamp].push_back(std::move(*event));
-          event_json_factory_->Convert(json, composing_event_map_[timestamp],
-                                       *trace_clock_);
-          composing_event_map_.erase(timestamp);
-          composing_lock_.unlock();
-          break;
-        default:
-          break;
-      }
+            composing_event_map_[timestamp].push_back(std::move(*event));
+            event_json_factory_->Convert(json, composing_event_map_[timestamp],
+                                         *trace_clock_);
+            composing_event_map_.erase(timestamp);
+            composing_lock_.unlock();
+            break;
+          default:
+            break;
+        }
+        if (!json.empty()) {
+          ofs << json << ",";
+        }
+      };
 
-      const std::string output = std::move(Output());
-
-      if (!json.empty() && output.empty()) {
-        VerboseLogger() << json;
-      } else {
-        std::ofstream ofs(std::move(output), std::ios::binary);
-        ofs << json;
+      futures.push_back(std::move(std::async(std::launch::async, parse)));
+      if (futures.size() > std::thread::hardware_concurrency() * 2) {
+        for (auto& f : futures) {
+          f.wait();
+        }
+        futures.clear();
       }
     }
+    ofs << "],\"displayTimeUnit\": \"ns\"}";
   }
 
  private:
@@ -93,6 +104,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
   //     event_json_factory_;
   std::map<uint32_t, std::vector<traceevent>> composing_event_map_;
   std::mutex composing_lock_;
+  std::mutex json_lock_;
 };
 
 }  // namespace coding_nerd::boot_perf

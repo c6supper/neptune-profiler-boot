@@ -19,6 +19,7 @@
 #include "trace/kev_log_file_parser.h"
 // NOLINTBEGIN
 #include <signal.h>
+
 sigset_t make_sigset(std::initializer_list<int32_t> signals) {
   sigset_t set;
   const int32_t result = sigemptyset(&set);
