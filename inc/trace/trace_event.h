@@ -128,13 +128,12 @@ struct TraceEvent {
     }
   }
 
-  static void ToExt(std::enable_if<!std::is_array<T>::value, T&> e,
-                    uint32_t& ext_class, uint32_t& ext_event) {
+  static void ToExt(T& e, uint32_t& ext_class, uint32_t& ext_event) {
     ToExt(_NTO_TRACE_GETEVENT_C(e.header), _NTO_TRACE_GETEVENT(e.header),
           ext_class, ext_event);
   };
-  static void ToExt(std::enable_if<std::is_array<T>::value, T&> e,
-                    uint32_t& ext_class, uint32_t& ext_event) {
+  static void ToExt(std::vector<T>& e, uint32_t& ext_class,
+                    uint32_t& ext_event) {
     ToExt(_NTO_TRACE_GETEVENT_C(e[0].header), _NTO_TRACE_GETEVENT(e[0].header),
           ext_class, ext_event);
   };
@@ -161,30 +160,28 @@ struct TraceEvent {
     }
   }
 
-  static void ToJson(nlohmann::json& j,
-                     std::enable_if<!std::is_array<T>::value, T&> e,
-                     const TraceClock& trace_clock) {
-    uint32_t ext_class;
-    uint32_t ext_event;
-    TraceEvent<T>::ToExt(e, ext_class, ext_event);
-    j = nlohmann::json{
-        {"ts", trace_clock.NanoSinceBootFromCycle(e.data[0]).count()},
-        {"cpu", _NTO_TRACE_GETCPU(e.header)},
-        {"class", ClassName[ext_class]},
-        {"event", ext_event}};
-  }
+  // static void ToJson(nlohmann::json& j, T& e, const TraceClock& trace_clock)
+  // {
+  //   uint32_t ext_class;
+  //   uint32_t ext_event;
+  //   TraceEvent<T>::ToExt(e, ext_class, ext_event);
+  //   j = nlohmann::json{
+  //       {"ts", trace_clock.NanoSinceBootFromCycle(e.data[0]).count()},
+  //       {"cpu", _NTO_TRACE_GETCPU(e.header)},
+  //       {"class", ClassName[ext_class]},
+  //       {"event", ext_event}};
+  // }
 
-  static void ToJson(nlohmann::json& j,
-                     std::enable_if<std::is_array<T>::value, T&> e,
+  static void ToJson(nlohmann::json& j, std::vector<T>& e,
                      const TraceClock& trace_clock) {
     uint32_t ext_class;
     uint32_t ext_event;
-    TraceEvent<T>::ToExt(_NTO_TRACE_GETEVENT_C(e[0]->header),
-                         _NTO_TRACE_GETEVENT(e[0]->header), ext_class,
+    TraceEvent<T>::ToExt(_NTO_TRACE_GETEVENT_C(e[0].header),
+                         _NTO_TRACE_GETEVENT(e[0].header), ext_class,
                          ext_event);
     j = nlohmann::json{
-        {"ts", trace_clock.NanoSinceBootFromCycle(e[0]->data[0]).count()},
-        {"cpu", _NTO_TRACE_GETCPU(e[0]->header)},
+        {"ts", trace_clock.NanoSinceBootFromCycle(e[0].data[0]).count()},
+        {"cpu", _NTO_TRACE_GETCPU(e[0].header)},
         {"class", ClassName[ext_class]},
         {"event", ext_event}};
   };

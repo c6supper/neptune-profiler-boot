@@ -5,6 +5,7 @@
 
 #include "event_factory.h"
 #include "json.hpp"
+#include "logger.h"
 #include "trace/trace_clock.h"
 #include "trace_event.h"
 #include "trace_type.h"
@@ -21,25 +22,23 @@ struct ProcessEvent : TraceEvent<T> {
                         std::shared_ptr<TraceClock>& clock)
       : TraceEvent<T>(event, clock){};
 
-  static void ToJson(nlohmann::json& j,
-                     std::enable_if<!std::is_array<T>::value, T&> e,
-                     const TraceClock& trace_clock) {
+  static void ToJson(nlohmann::json& j, T& e, const TraceClock& trace_clock) {
     TraceEvent<T>::ToJson(j, e, trace_clock);
   };
 
-  static void ToJson(nlohmann::json& j,
-                     std::enable_if<std::is_array<T>::value, T&> e,
+  static void ToJson(nlohmann::json& j, std::vector<T>& e,
                      const TraceClock& trace_clock) {
     TraceEvent<T>::ToJson(j, e, trace_clock);
+    VerboseLogger() << e.size();
   };
 };
 
 static DoRegisterConverter<nlohmann::json, traceevent> process_json_converter{
     _NTO_TRACE_PROCESS, ProcessEvent<traceevent>::ToJson};
 
-static DoRegisterConverter<nlohmann::json, std::vector<traceevent>>
-    process_composing_json_converter{
-        _NTO_TRACE_PROCESS, ProcessEvent<std::vector<traceevent>>::ToJson};
+// static DoRegisterConverter<nlohmann::json, std::vector<traceevent>>
+//     process_composing_json_converter{
+//         _NTO_TRACE_PROCESS, ProcessEvent<std::vector<traceevent>>::ToJson};
 
 }  // namespace coding_nerd::boot_perf
 #endif  // PROCESS_EVENT_H_

@@ -19,7 +19,7 @@ template <typename C, typename T>
 class EventFactory {
  public:
   using type = EventFactory;
-  using ConverterType = void(C &, const T &, const TraceClock &);
+  using ConverterType = void(C &, std::vector<T> &, const TraceClock &);
   EventFactory() = default;
   virtual ~EventFactory() = default;
 
@@ -34,22 +34,20 @@ class EventFactory {
     converterMap_[c] = converter;
   };
 
-  void Convert(C &c, std::enable_if<!std::is_array<T>::value, T &> e,
-               const TraceClock &clock) {
-    uint32_t ext_class;
-    uint32_t ext_event;
-    TraceEvent<T>::ToExt(e, ext_class, ext_event);
-    const std::lock_guard<std::mutex> lock(converterMapMutex_);
-    if (auto search = converterMap_.find(ext_class);
-        search != converterMap_.end())
-      search->second(c, e, clock);
-    else
-      VerboseLogger() << "Unknown e, class = " << ClassName[ext_class]
-                      << ", event = " << ext_event;
-  };
+  // void Convert(C &c, T &e, const TraceClock &clock) {
+  //   uint32_t ext_class;
+  //   uint32_t ext_event;
+  //   TraceEvent<T>::ToExt(e, ext_class, ext_event);
+  //   const std::lock_guard<std::mutex> lock(converterMapMutex_);
+  //   if (auto search = converterMap_.find(ext_class);
+  //       search != converterMap_.end())
+  //     search->second(c, e, clock);
+  //   else
+  //     VerboseLogger() << "Unknown e, class = " << ClassName[ext_class]
+  //                     << ", event = " << ext_event;
+  // };
 
-  void Convert(C &c, std::enable_if<std::is_array<T>::value, T &> e,
-               const TraceClock &clock) {
+  void Convert(C &c, std::vector<T> &e, const TraceClock &clock) {
     uint32_t ext_class;
     uint32_t ext_event;
     TraceEvent<T>::ToExt(e[0], ext_class, ext_event);

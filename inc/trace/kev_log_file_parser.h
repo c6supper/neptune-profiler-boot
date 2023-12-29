@@ -23,7 +23,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
   KeyLogFileParser()
       : TraceParser<std::ifstream, Out>(),
         trace_clock_(std::make_shared<TraceClock>()),
-        single_event_json_factory_(
+        event_json_factory_(
             EventFactory<nlohmann::json, traceevent>::Instance()){};
   ~KeyLogFileParser() override = default;
   KeyLogFileParser(KeyLogFileParser& other) = delete;
@@ -45,6 +45,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       }
       nlohmann::json json;
       const uint32_t timestamp = event->data[0];
+      std::vector<traceevent> ev;
       switch (_TRACE_GET_STRUCT(event->header)) {
         case _TRACE_STRUCT_CC:
         case _TRACE_STRUCT_CB:
@@ -53,14 +54,15 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
           composing_lock_.unlock();
           break;
         case _TRACE_STRUCT_S:
-          single_event_json_factory_->Convert(json, *event, *trace_clock_);
+          ev.push_back(std::move(*event));
+          event_json_factory_->Convert(json, ev, *trace_clock_);
           break;
         case _TRACE_STRUCT_CE:
           composing_lock_.lock();
 
           composing_event_map_[timestamp].push_back(std::move(*event));
-          composing_event_json_factory_->Convert(
-              json, composing_event_map_[timestamp], *trace_clock_);
+          event_json_factory_->Convert(json, composing_event_map_[timestamp],
+                                       *trace_clock_);
           composing_event_map_.erase(timestamp);
           composing_lock_.unlock();
           break;
@@ -77,10 +79,9 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
  private:
   std::unique_ptr<TraceHeader> trace_header_;
   std::shared_ptr<TraceClock> trace_clock_;
-  std::shared_ptr<EventFactory<nlohmann::json, traceevent>>
-      single_event_json_factory_;
-  std::shared_ptr<EventFactory<nlohmann::json, std::vector<traceevent>>>
-      composing_event_json_factory_;
+  std::shared_ptr<EventFactory<nlohmann::json, traceevent>> event_json_factory_;
+  // std::shared_ptr<EventFactory<nlohmann::json, std::vector<traceevent>>>
+  //     event_json_factory_;
   std::map<uint32_t, std::vector<traceevent>> composing_event_map_;
   std::mutex composing_lock_;
 };
