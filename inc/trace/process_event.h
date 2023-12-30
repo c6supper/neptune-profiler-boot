@@ -29,12 +29,5 @@ struct ProcessEvent : TraceEvent<T> {
   };
 };
 
-static DoRegisterConverter<nlohmann::json, traceevent> process_json_converter{
-    _NTO_TRACE_PROCESS, ProcessEvent<traceevent>::ToJson};
-
-// static DoRegisterConverter<nlohmann::json, std::vector<traceevent>>
-//     process_composing_json_converter{
-//         _NTO_TRACE_PROCESS, ProcessEvent<std::vector<traceevent>>::ToJson};
-
 }  // namespace coding_nerd::boot_perf
 #endif  // PROCESS_EVENT_H_

@@ -4,18 +4,16 @@
 #include <cstdint>
 #include <fstream>
 #include <future>
-#include <map>
+#include <ios>
 #include <memory>
 #include <mutex>
+#include <string>
+#include <thread>
 #include <utility>
-#include <vector>
 
-#include "../logger.h"
 #include "event_factory.h"
 #include "json.hpp"
-#include "process_event.h"
 #include "trace/trace_clock.h"
-#include "trace/trace_event.h"
 #include "trace/trace_type.h"
 #include "trace_header.h"
 #include "trace_parser.h"
@@ -41,9 +39,10 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
 
     std::vector<std::future<void>> futures;
     const std::string output = std::move(Output());
-    std::ofstream ofs(output, std::ios::binary);
-    ofs << "{\"traceEvents\": [";
-    while (!ifs.eof() || !ifs.fail() || !ifs.bad()) {
+    std::ofstream ofs(
+        output, std::ios::binary | std::ios_base::out | std::ios_base::trunc);
+    ofs << R"({"traceEvents": [)";
+    while ((!ifs.eof() || !ifs.fail() || !ifs.bad()) && this->IsRunning()) {
       auto event = std::make_shared<traceevent>();
       ifs.read(reinterpret_cast<char*>(event.get()), sizeof(traceevent));
 
@@ -86,14 +85,15 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       };
 
       futures.push_back(std::move(std::async(std::launch::async, parse)));
-      if (futures.size() > std::thread::hardware_concurrency() * 2) {
+      if (static_cast<uint32_t>(futures.size()) >
+          (std::thread::hardware_concurrency() * 2)) {
         for (auto& f : futures) {
           f.wait();
         }
         futures.clear();
       }
     }
-    ofs << "],\"displayTimeUnit\": \"ns\"}";
+    ofs << R"(],"displayTimeUnit": "ns"})";
   }
 
  private:

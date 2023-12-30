@@ -1,9 +1,12 @@
 #include "runtime.h"
 
+#include <boost/log/core.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/trivial.hpp>
 #include <iostream>
+#include <memory>
 
 #include "cxxopts.hpp"
-#include "logger.h"
 
 namespace coding_nerd::boot_perf {
 

@@ -5,7 +5,8 @@
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
 
-#define VerboseLogger() BOOST_LOG_TRIVIAL(debug)
+#define VerboseLogger() BOOST_LOG_TRIVIAL(trace)
+#define DebugLogger() BOOST_LOG_TRIVIAL(debug)
 #define WarningLogger() BOOST_LOG_TRIVIAL(warning)
 #define InfoLogger() BOOST_LOG_TRIVIAL(info)
 #define FatalLogger() BOOST_LOG_TRIVIAL(fatal)

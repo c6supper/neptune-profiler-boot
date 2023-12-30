@@ -1,17 +1,9 @@
-#include "boot_perf.h"
 
-#include <boost/mpl/vector.hpp>
-#include <chrono>
-#include <cstdio>
+#include <cstdint>
 #include <cstdlib>
-#include <cstring>
 #include <exception>
 #include <fstream>
 #include <iostream>
-#include <iterator>
-#include <limits>
-#include <string>
-#include <thread>
 #include <utility>
 
 #include "logger.h"
@@ -36,7 +28,7 @@ int main(const int argc, const char* argv[]) {
     exit(0);
   }
 
-#if 0
+#if boot_perf
   BootPerfContext().Start<>(std::chrono::milliseconds(200));
 
   const auto signal_list = make_sigset({SIGTERM, SIGSEGV, SIGINT, SIGABRT});
@@ -58,8 +50,20 @@ int main(const int argc, const char* argv[]) {
   try {
     std::ifstream ifs(std::move(Input()), std::ios::binary);
 
+    const auto signal_list = make_sigset({SIGINT});
+
+    pthread_sigmask(SIG_BLOCK, &signal_list, nullptr);
     coding_nerd::boot_perf::KeyLogFileParser<std::ofstream> parser;
-    parser.Parse(ifs);
+    parser.Start(ifs);
+    int32_t last_signal;
+    do {
+      sigwait(&signal_list, &last_signal);
+      InfoLogger() << "Got signal " << last_signal;
+      parser.Stop();
+
+      // Exit on sigint so ctrl+c still works
+    } while (last_signal != SIGINT);
+
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
   }
