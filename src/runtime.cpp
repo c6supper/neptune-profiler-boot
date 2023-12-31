@@ -30,7 +30,9 @@ bool Runtime::CreateArg(int argc, const char* argv[]) {
                        cxxopts::value<bool>()->default_value("false"))(
             "i,input", "Input Trace File", cxxopts::value<std::string>())(
             "o,output", "Output Trace File", cxxopts::value<std::string>())(
-            "h,help", "Print usage");
+            "f,ftrace", "Enable output to ftrace",
+            cxxopts::value<bool>()->default_value("false"))("h,help",
+                                                            "Print usage");
     options.parse_positional({"input"});
     options.parse_positional({"output"});
     args_ = std::make_shared<cxxopts::ParseResult>(options.parse(argc, argv));

@@ -34,19 +34,6 @@ class EventFactory {
     converterMap_[c] = converter;
   };
 
-  // void Convert(C &c, T &e, const TraceClock &clock) {
-  //   uint32_t ext_class;
-  //   uint32_t ext_event;
-  //   TraceEvent<T>::ToExt(e, ext_class, ext_event);
-  //   const std::lock_guard<std::mutex> lock(converterMapMutex_);
-  //   if (auto search = converterMap_.find(ext_class);
-  //       search != converterMap_.end())
-  //     search->second(c, e, clock);
-  //   else
-  //     VerboseLogger() << "Unknown e, class = " << ClassName[ext_class]
-  //                     << ", event = " << ext_event;
-  // };
-
   void Convert(C &c, std::vector<T> &e, const TraceClock &clock) {
     uint32_t ext_class;
     uint32_t ext_event;
@@ -69,7 +56,8 @@ struct DoRegisterConverter {
   DoRegisterConverter(const uint32_t &c,
                       typename EventFactory<C, T>::ConverterType *converter) {
     EventFactory<C, T>::Instance()->RegisterConverter(c, converter);
-    VerboseLogger() << "DoRegisterConverter for " << c;
+    VerboseLogger() << "DoRegisterConverter for " << c
+                    << ", C Type = " << typeid(C).name();
   };
 };
 }  // namespace coding_nerd::boot_perf

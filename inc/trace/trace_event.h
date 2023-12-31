@@ -135,7 +135,7 @@ struct TraceEvent {
     }
   }
 
-  static void ToExt(T& e, uint32_t& ext_class, uint32_t& ext_event) {
+  static void ToExt(const T& e, uint32_t& ext_class, uint32_t& ext_event) {
     ToExt(_NTO_TRACE_GETEVENT_C(e.header), _NTO_TRACE_GETEVENT(e.header),
           ext_class, ext_event);
   };
@@ -149,18 +149,23 @@ struct TraceEvent {
     printf("t:%8ld ns CPU:%02d 0x%-8x:0x%-8x",
            trace_clock.NanoSinceBootFromCycle(event.data[0]).count(),
            _NTO_TRACE_GETCPU(event.header), event.data[1], event.data[2]);
+    uint32_t ext_class;
+    uint32_t ext_event;
+    ToExt(event, ext_class, ext_event);
+    printf(", ext class=0x%-8x, ext event=0x%-8x ,", ext_class, ext_event);
+
     switch (_TRACE_GET_STRUCT(event.header)) {
       case _TRACE_STRUCT_CC:
-        printf("%-s\n", "_TRACE_STRUCT_CC");
+        printf("%-s\n", " _TRACE_STRUCT_CC");
         break;
       case _TRACE_STRUCT_CB:
-        printf("%-s\n", "_TRACE_STRUCT_CB");
+        printf("%-s\n", " _TRACE_STRUCT_CB");
         break;
       case _TRACE_STRUCT_S:
-        printf("%-s\n", "_TRACE_STRUCT_S");
+        printf("%-s\n", " _TRACE_STRUCT_S");
         break;
       case _TRACE_STRUCT_CE:
-        printf("%-s\n", "_TRACE_STRUCT_CE");
+        printf("%-s\n", " _TRACE_STRUCT_CE");
         break;
       default:
         break;

@@ -9,6 +9,13 @@
  * Define the states of a thread
  * THREAD.state
  */
+const char* const task_state[] = {
+    "THDEAD       ", "THRUNNING    ", "THREADY      ", "THSTOPPED    ",
+    "THSEND       ", "THRECEIVE    ", "THREPLY      ", "THSTACK      ",
+    "THWAITTHREAD ", "THWAITPAGE   ", "THSIGSUSPEND ", "THSIGWAITINFO",
+    "THNANOSLEEP  ", "THMUTEX      ", "THCONDVAR    ", "THJOIN       ",
+    "THINTR       ", "THSEM        ", "THWAITCTX    ", "THNET_SEND   ",
+    "THNET_REPLY  "};
 enum _THREAD_STATE {
   STATE_DEAD,    /* 0	0x00 */
   STATE_RUNNING, /* 1	0x01 */
@@ -37,6 +44,12 @@ enum _THREAD_STATE {
   STATE_NET_REPLY, /* 20	0x14 */
 
   STATE_MAX = 24 /* This cannot be changed. It is the highest we can support */
+};
+
+enum _PROCESS_STATE {
+  STATE_CREATE, /* 0	0x00 */
+  STATE_DESTROY,
+  /* 1	0x01 */
 };
 
 /* TraceEvent() - modes */
@@ -333,6 +346,8 @@ enum _TRACE_THREAD_STATE { /* Two add. thread-states */
                            _TRACE_THREAD_DESTROY,
                            _TRACE_MAX_TH_STATE_NUM
 };
+
+#define _TRACE_MAX_STR_SIZE (128)
 
 typedef uint32_t __traceentry;
 

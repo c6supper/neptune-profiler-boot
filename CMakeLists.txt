@@ -6,7 +6,7 @@
 # INSTALL default: off
 option(INSTALL "Install neptune binaries and files" OFF)
 option(DOC "Generate and update the doc files" OFF)
-option(OPTION_CLANG_TIDY "Analyze code with clang-tidy." ON)
+option(OPTION_CLANG_TIDY "Analyze code with clang-tidy." OFF)
 option(OPTION_CPPCHECK "Analyze code with cppcheck." OFF)
 option(OPTION_TARGET "Build Target" ON)
 
@@ -68,9 +68,8 @@ if(OPTION_TARGET)
     find_package(Threads REQUIRED)
   endif()
 
-
   add_compile_options(
-    "$<$<CONFIG:DEBUG>:-g3;-D DEBUG>"
+    "$<$<CONFIG:DEBUG>:-g3;-O0;-D DEBUG>"
   )
   set(TARGET_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/${CMAKE_SYSTEM_PROCESSOR})
 
@@ -98,15 +97,15 @@ if(OPTION_TARGET)
     target_link_libraries(${target} Threads::Threads ${Boost_LIBRARIES})
   endif()
 
-  set(Boost_USE_STATIC_LIBS OFF) 
-  set(Boost_USE_MULTITHREADED ON)  
-  set(Boost_USE_STATIC_RUNTIME OFF) 
-  find_package(Boost 1.71.0 COMPONENTS filesystem log REQUIRED) 
+  set(Boost_USE_STATIC_LIBS OFF)
+  set(Boost_USE_MULTITHREADED ON)
+  set(Boost_USE_STATIC_RUNTIME OFF)
+  find_package(Boost 1.71.0 COMPONENTS filesystem log REQUIRED)
 
   if(Boost_FOUND)
-      MESSAGE( STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
-      include_directories(${Boost_INCLUDE_DIRS}) 
-      target_link_libraries(${target} ${Boost_LIBRARIES})
+    MESSAGE(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
+    include_directories(${Boost_INCLUDE_DIRS})
+    target_link_libraries(${target} ${Boost_LIBRARIES})
   endif()
 
   if(OPTION_CLANG_TIDY)

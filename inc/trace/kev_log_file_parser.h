@@ -28,7 +28,9 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       : TraceParser<std::ifstream, Out>(),
         trace_clock_(std::make_shared<TraceClock>()),
         event_json_factory_(
-            EventFactory<nlohmann::json, traceevent>::Instance()){};
+            EventFactory<nlohmann::json, traceevent>::Instance()),
+        event_ftrace_factory_(
+            EventFactory<std::string, traceevent>::Instance()){};
   ~KeyLogFileParser() override = default;
   KeyLogFileParser(KeyLogFileParser& other) = delete;
   KeyLogFileParser& operator=(KeyLogFileParser& other) = delete;
@@ -48,7 +50,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
 
       trace_clock_->SetTraceBootCycle(event->data[0]);
 
-      auto parse = [&, event]() {
+      auto async_parse = [&, event]() {
         nlohmann::json json;
         if (Verbose()) {
           TraceEvent<traceevent>::Dump(*event, *trace_clock_);
@@ -83,23 +85,67 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
           ofs << json << ",";
         }
       };
-
-      futures.push_back(std::move(std::async(std::launch::async, parse)));
+      auto sync_parse = [&, event]() {
+        std::string ftrace;
+        if (Verbose()) {
+          TraceEvent<traceevent>::Dump(*event, *trace_clock_);
+          // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        const uint32_t timestamp = event->data[0];
+        std::vector<traceevent> ev;
+        switch (_TRACE_GET_STRUCT(event->header)) {
+          case _TRACE_STRUCT_CC:
+          case _TRACE_STRUCT_CB:
+            composing_lock_.lock();
+            composing_event_map_[timestamp].push_back(std::move(*event));
+            composing_lock_.unlock();
+            break;
+          case _TRACE_STRUCT_S:
+            ev.push_back(std::move(*event));
+            event_ftrace_factory_->Convert(ftrace, ev, *trace_clock_);
+            break;
+          case _TRACE_STRUCT_CE:
+            composing_lock_.lock();
+            composing_event_map_[timestamp].push_back(std::move(*event));
+            event_ftrace_factory_->Convert(
+                ftrace, composing_event_map_[timestamp], *trace_clock_);
+            composing_event_map_.erase(timestamp);
+            composing_lock_.unlock();
+            break;
+          default:
+            break;
+        }
+        if (!ftrace.empty()) {
+          ofs << ftrace;
+        }
+      };
+      if (Ftrace()) {
+        futures.push_back(
+            std::move(std::async(std::launch::async, sync_parse)));
+      } else {
+        futures.push_back(
+            std::move(std::async(std::launch::async, async_parse)));
+      }
       if (static_cast<uint32_t>(futures.size()) >
-          (std::thread::hardware_concurrency() * 2)) {
+          (Ftrace() ? 0 : (std::thread::hardware_concurrency() * 2))) {
         for (auto& f : futures) {
           f.wait();
         }
         futures.clear();
       }
     }
-    ofs << R"(],"displayTimeUnit": "ns"})";
-  }
+    if (!Ftrace()) {
+      ofs << R"(],"displayTimeUnit": "ns"})";
+    } else {
+      ofs << R"(,"controllerTraceDataKey": "systraceController"})";
+    }
+  };
 
  private:
   std::unique_ptr<TraceHeader> trace_header_;
   std::shared_ptr<TraceClock> trace_clock_;
   std::shared_ptr<EventFactory<nlohmann::json, traceevent>> event_json_factory_;
+  std::shared_ptr<EventFactory<std::string, traceevent>> event_ftrace_factory_;
   // std::shared_ptr<EventFactory<nlohmann::json, std::vector<traceevent>>>
   //     event_json_factory_;
   std::map<uint32_t, std::vector<traceevent>> composing_event_map_;
