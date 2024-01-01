@@ -117,20 +117,18 @@ struct ThreadEvent : TraceEvent<T> {
         auto& cpu_process_info = GetRunningProcess(cpu_thread_info->tgid);
         auto& next_process_info = GetRunningProcess(thread_info->tgid);
 
-        const uint32_t sec =
-            trace_clock.NanoSinceBootFromCycle(e[0].data[0]).count() / 1000 /
+        const float sec =
+            static_cast<float>(
+                trace_clock.MicroSinceBootFromCycle(e[0].data[0]).count()) /
             1000 / 1000;
-        const uint32_t ms =
-            trace_clock.NanoSinceBootFromCycle(e[0].data[0]).count() %
-            (1000 * 1000 * 1000);
         // clang-format off
         trace += boost::str(
-            boost::format("%s-%d (-----) [00%1d] .... %d.%d: \
+            boost::format("%s-%d (-----) [00%1d] .... %7.6f: \
 sched_switch: prev_comm=%s prev_pid=%d \
 prev_prio=%d prev_state=%s ==> next_comm=%s \
 next_pid=%d next_prio=%d\\n ") %
             cpu_process_info->name % cpu_process_info->pid %
-            _NTO_TRACE_GETCPU(e[0].header) % sec % ms % cpu_process_info->name %
+            _NTO_TRACE_GETCPU(e[0].header) % sec % cpu_process_info->name %
             cpu_process_info->pid % cpu_thread_info->priority %
             EventToLinuxState(cpu_thread_info->state) % next_process_info->name %
             next_process_info->pid % thread_info->priority);

@@ -49,7 +49,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
     } else {
       ofs << R"({"systemTraceEvents": ")";
     }
-    while ((!ifs.eof() || !ifs.fail() || !ifs.bad()) && this->IsRunning()) {
+    while (ifs && this->IsRunning()) {
       auto event = std::make_shared<traceevent>();
       ifs.read(reinterpret_cast<char*>(event.get()), sizeof(traceevent));
 
@@ -147,6 +147,9 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       ofs << R"(],"displayTimeUnit": "ns"})";
     } else {
       ofs << R"(","controllerTraceDataKey": "systraceController"})";
+    }
+    if (this->IsRunning()) {
+      WarningLogger() << "Done, please try Ctrl+C to close the app.";
     }
   };
 

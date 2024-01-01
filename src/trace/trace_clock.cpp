@@ -18,9 +18,9 @@ std::chrono::nanoseconds TraceClock::NanoSinceBootFromCycle(
     const uint32_t cycle) const {
   if (!IsValid()) FatalLogger() << "Clock haven't been initialized";
   return std::chrono::nanoseconds{
-      static_cast<uint64_t>(trace_cycle_turn_over_) << 32 |
-      static_cast<uint64_t>(cycle - trace_boot_cycle_) *
-          (1000 * 1000 * 1000 / cycle_per_sec_)};
+      (static_cast<uint64_t>(trace_cycle_turn_over_) << 32 |
+       static_cast<uint64_t>(cycle - trace_boot_cycle_)) *
+      1000 * 1000 * 1000 / cycle_per_sec_};
 }
 
 bool TraceClock::IsValid() const {
@@ -30,10 +30,11 @@ bool TraceClock::IsValid() const {
 std::chrono::microseconds TraceClock::MicroSinceBootFromCycle(
     const uint32_t cycle) const {
   if (!IsValid()) FatalLogger() << "Clock haven't been initialized";
+
   return std::chrono::microseconds{
-      static_cast<uint64_t>(trace_cycle_turn_over_) << 32 |
-      static_cast<uint64_t>(cycle - trace_boot_cycle_) *
-          (1000 * 1000 / cycle_per_sec_)};
+      (static_cast<uint64_t>(trace_cycle_turn_over_) << 32 |
+       static_cast<uint64_t>(cycle - trace_boot_cycle_)) *
+      1000 * 1000 / cycle_per_sec_};
 }
 
 const uint32_t& TraceClock::GetCycleTurnOver() const {
