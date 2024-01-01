@@ -70,6 +70,7 @@ if(OPTION_TARGET)
 
   add_compile_options(
     "$<$<CONFIG:DEBUG>:-g3;-O0;-D DEBUG>"
+    "$<$<CONFIG:RELEASE>:-O3;>"
   )
   set(TARGET_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/${CMAKE_SYSTEM_PROCESSOR})
 
