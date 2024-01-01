@@ -50,8 +50,8 @@ struct ThreadEvent : TraceEvent<T> {
         }
         thread_info->tgid = e[0].data[1];
         thread_info->tid = e[0].data[2];
-        thread_info->priority = e[0].data[3];
-        thread_info->policy = e[0].data[4];
+        thread_info->priority = e[1].data[1];
+        thread_info->policy = e[1].data[2];
         thread_info->cpu = _NTO_TRACE_GETCPU(e[0].header);
         thread_info->state = STATE_RUNNING;
 
@@ -60,23 +60,27 @@ struct ThreadEvent : TraceEvent<T> {
           cpu_thread_info = thread_info;
           break;
         }
+        auto& cpu_process_info = GetRunningProcess(cpu_thread_info->tgid);
+        auto& next_process_info = GetRunningProcess(thread_info->tgid);
 
         const uint32_t sec =
             trace_clock.NanoSinceBootFromCycle(e[0].data[0]).count() / 1000 /
             1000 / 1000;
         const uint32_t ms =
             trace_clock.NanoSinceBootFromCycle(e[0].data[0]).count() %
-            (1000 * 1000);
+            (1000 * 1000 * 1000);
+        // clang-format off
         trace += boost::str(
-            boost::format(
-                "          %1%-%2%     (-----) [00%3%] .... %4%.%5%: sched_switch: \
-                prev_comm=%6% prev_pid=%7% prev_prio=%8% prev_state=%9% ==> \
-                next_comm=%10% next_pid=%11% next_prio=%12%\n") %
-            cpu_thread_info->name % cpu_thread_info->tgid %
-            _NTO_TRACE_GETCPU(e[0].header) % sec % ms % cpu_thread_info->name %
-            cpu_thread_info->tid % cpu_thread_info->priority %
-            cpu_thread_info->state % thread_info->name % thread_info->tid %
-            thread_info->priority);
+            boost::format("%s-%d (-----) [00%1d] .... %d.%d: \
+sched_switch: prev_comm=%s prev_pid=%d \
+prev_prio=%d prev_state=%d ==> next_comm=%s \
+next_pid=%d next_prio=%d\\n ") %
+            cpu_process_info->name % cpu_process_info->pid %
+            _NTO_TRACE_GETCPU(e[0].header) % sec % ms % cpu_process_info->name %
+            cpu_process_info->pid % cpu_thread_info->priority %
+            cpu_thread_info->state % next_process_info->name %
+            next_process_info->pid % thread_info->priority);
+        // clang-format on
         cpu_thread_info = thread_info;
         InfoLogger() << "_NTO_TRACE_THRUNNING " << *thread_info;
         break;

@@ -47,7 +47,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
     if (!Ftrace()) {
       ofs << R"({"traceEvents": [)";
     } else {
-      ofs << R"(systemTraceEvents": ")";
+      ofs << R"({"systemTraceEvents": ")";
     }
     while ((!ifs.eof() || !ifs.fail() || !ifs.bad()) && this->IsRunning()) {
       auto event = std::make_shared<traceevent>();
