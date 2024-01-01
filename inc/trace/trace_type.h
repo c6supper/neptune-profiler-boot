@@ -137,6 +137,18 @@ const char* const task_state[] = {
     "THNANOSLEEP  ", "THMUTEX      ", "THCONDVAR    ", "THJOIN       ",
     "THINTR       ", "THSEM        ", "THWAITCTX    ", "THNET_SEND   ",
     "THNET_REPLY  "};
+
+// Linux thread state
+// D    uninterruptible sleep (usually IO)
+// R    running or runnable (on run queue)
+// R+   Runnable (Preempted)
+// S    interruptible sleep (waiting for an event to complete)
+// T    stopped by job control signal
+// t    stopped by debugger during the tracing
+// W    paging (not valid since the 2.6.xx kernel)
+// X    dead (should never be seen)
+// Z    defunct ("zombie") process, terminated but not reaped by its parent
+
 enum _THREAD_STATE {
   STATE_DEAD,    /* 0	0x00 */
   STATE_RUNNING, /* 1	0x01 */
