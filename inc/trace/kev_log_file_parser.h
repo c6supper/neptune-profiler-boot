@@ -43,10 +43,19 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
     const std::string output = std::move(Output());
     std::ofstream ofs(
         output, std::ios::binary | std::ios_base::out | std::ios_base::trunc);
-    ofs << R"({"traceEvents": [)";
+
+    if (!Ftrace()) {
+      ofs << R"({"traceEvents": [)";
+    } else {
+      ofs << R"(systemTraceEvents": ")";
+    }
     while ((!ifs.eof() || !ifs.fail() || !ifs.bad()) && this->IsRunning()) {
       auto event = std::make_shared<traceevent>();
       ifs.read(reinterpret_cast<char*>(event.get()), sizeof(traceevent));
+
+      if (!TraceEvent<traceevent>::IsValid(*event)) {
+        continue;
+      }
 
       trace_clock_->SetTraceBootCycle(event->data[0]);
 
@@ -137,7 +146,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
     if (!Ftrace()) {
       ofs << R"(],"displayTimeUnit": "ns"})";
     } else {
-      ofs << R"(,"controllerTraceDataKey": "systraceController"})";
+      ofs << R"(","controllerTraceDataKey": "systraceController"})";
     }
   };
 
