@@ -23,16 +23,18 @@ bool Runtime::CreateArg(int argc, const char* argv[]) {
     options.positional_help("[optional args]").show_positional_help();
 
     bool verbose = false;
+    // clang-format off
     options.set_width(70)
         .set_tab_expansion()
         .allow_unrecognised_options()
-        .add_options()("v,verbose", "Enable verbose log",
-                       cxxopts::value<bool>()->default_value("false"))(
-            "i,input", "Input Trace File", cxxopts::value<std::string>())(
-            "o,output", "Output Trace File", cxxopts::value<std::string>())(
-            "f,ftrace", "Enable output to ftrace",
-            cxxopts::value<bool>()->default_value("false"))("h,help",
-                                                            "Print usage");
+        .add_options()
+        ("v,verbose", "Enable verbose log",cxxopts::value<bool>()->default_value("false"))
+        ("i,input", "Input Trace File", cxxopts::value<std::string>())
+        ("o,output", "Output Trace File", cxxopts::value<std::string>())
+        ("f,ftrace", "Enable output to ftrace",cxxopts::value<bool>()->default_value("false"))
+        ("pt,tree", "Generate Process/Thread tree",cxxopts::value<bool>()->default_value("false"))
+        ("h,help","Print usage");
+    // clang-format on
     options.parse_positional({"input"});
     options.parse_positional({"output"});
     args_ = std::make_shared<cxxopts::ParseResult>(options.parse(argc, argv));
