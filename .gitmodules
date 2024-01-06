@@ -1,3 +1,0 @@
-[submodule "bootchart"]
-	path = bootchart
-	url = git@github.com:c6supper/bootchart.git
