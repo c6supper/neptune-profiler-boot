@@ -13,6 +13,7 @@
 
 #include "event_factory.h"
 #include "json.hpp"
+#include "proc_info.h"
 #include "trace/trace_clock.h"
 #include "trace/trace_type.h"
 #include "trace_header.h"
@@ -147,6 +148,12 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
       ofs << R"(],"displayTimeUnit": "ns"})";
     } else {
       ofs << R"(","controllerTraceDataKey": "systraceController"})";
+    }
+    if (!Tree().empty()) {
+      std::ofstream tree_ofs(std::move(Tree()), std::ios::binary |
+                                                    std::ios_base::out |
+                                                    std::ios_base::trunc);
+      tree_ofs << GetProc();
     }
     if (this->IsRunning()) {
       WarningLogger() << "Done, please try Ctrl+C to close the app.";

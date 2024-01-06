@@ -131,12 +131,12 @@ enum {
  * THREAD.state
  */
 const char* const task_state[] = {
-    "THDEAD       ", "THRUNNING    ", "THREADY      ", "THSTOPPED    ",
-    "THSEND       ", "THRECEIVE    ", "THREPLY      ", "THSTACK      ",
-    "THWAITTHREAD ", "THWAITPAGE   ", "THSIGSUSPEND ", "THSIGWAITINFO",
-    "THNANOSLEEP  ", "THMUTEX      ", "THCONDVAR    ", "THJOIN       ",
-    "THINTR       ", "THSEM        ", "THWAITCTX    ", "THNET_SEND   ",
-    "THNET_REPLY  "};
+    "THDEAD",       "THRUNNING",  "THREADY",      "THSTOPPED",
+    "THSEND",       "THRECEIVE",  "THREPLY",      "THSTACK",
+    "THWAITTHREAD", "THWAITPAGE", "THSIGSUSPEND", "THSIGWAITINFO",
+    "THNANOSLEEP",  "THMUTEX",    "THCONDVAR",    "THJOIN",
+    "THINTR",       "THSEM",      "THWAITCTX",    "THNET_SEND",
+    "THNET_REPLY"};
 
 // Linux thread state
 // D    uninterruptible sleep (usually IO)
@@ -178,6 +178,8 @@ enum _THREAD_STATE {
 
   STATE_MAX = 24 /* This cannot be changed. It is the highest we can support */
 };
+
+const char* const process_state[] = {"PRUNNING", "PDESTROY"};
 
 enum _PROCESS_STATE {
   STATE_CREATE, /* 0	0x00 */

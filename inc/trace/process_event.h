@@ -88,6 +88,14 @@ struct ProcessEvent : TraceEvent<T> {
         break;
       }
 
+      case _NTO_TRACE_PROCDESTROY: {
+        const uint32_t pid = e[0].data[2];
+        auto& process = GetRunningProcess(pid);
+        process->state = STATE_DESTROY;
+        RunningProcessDead(pid);
+        InfoLogger() << "_NTO_TRACE_PROCDESTROY " << *process;
+        break;
+      }
       default:
         break;
     }

@@ -148,6 +148,13 @@ next_pid=%d next_prio=%d\\n ") %
         InfoLogger() << "_NTO_TRACE_THCREATE " << *thread_info;
         break;
       }
+      case _NTO_TRACE_THDESTROY: {
+        auto& thread_info = GetRunningThread(e[0].data[1], e[0].data[2]);
+        thread_info->state = STATE_DEAD;
+        RunningThreadDead(e[0].data[1], e[0].data[2]);
+        InfoLogger() << "_NTO_TRACE_THDESTROY " << *thread_info;
+        break;
+      }
       default:
         break;
     }
@@ -174,8 +181,7 @@ next_pid=%d next_prio=%d\\n ") %
       case _NTO_TRACE_THWAITCTX:
       case _NTO_TRACE_THNET_SEND:
       case _NTO_TRACE_THNET_REPLY:
-      case _NTO_TRACE_THCREATE:
-      case _NTO_TRACE_THDESTROY: {
+      case _NTO_TRACE_THCREATE: {
         if (!GetRunningProcess(e[0].data[1])) {
           break;
         }

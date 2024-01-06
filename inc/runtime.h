@@ -12,7 +12,7 @@
 #define Output() (*ArgContext())["output"].as<std::string>()
 #define Verbose() (*ArgContext())["verbose"].as<bool>()
 #define Ftrace() (*ArgContext())["ftrace"].as<bool>()
-#define Tree() (*ArgContext())["tree"].as<bool>()
+#define Tree() (*ArgContext())["tree"].as<std::string>()
 
 namespace coding_nerd::boot_perf {
 

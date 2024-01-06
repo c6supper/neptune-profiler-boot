@@ -32,11 +32,12 @@ bool Runtime::CreateArg(int argc, const char* argv[]) {
         ("i,input", "Input Trace File", cxxopts::value<std::string>())
         ("o,output", "Output Trace File", cxxopts::value<std::string>())
         ("f,ftrace", "Enable output to ftrace",cxxopts::value<bool>()->default_value("false"))
-        ("pt,tree", "Generate Process/Thread tree",cxxopts::value<bool>()->default_value("false"))
+        ("t,tree", "Generate Process/Thread tree to File",cxxopts::value<std::string>())
         ("h,help","Print usage");
     // clang-format on
     options.parse_positional({"input"});
     options.parse_positional({"output"});
+    options.parse_positional({"tree"});
     args_ = std::make_shared<cxxopts::ParseResult>(options.parse(argc, argv));
 
     if (args_->count("input") <= 0 || args_->count("output") <= 0) {
