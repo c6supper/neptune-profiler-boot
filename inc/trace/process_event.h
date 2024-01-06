@@ -1,6 +1,7 @@
 #ifndef PROCESS_EVENT_H_
 #define PROCESS_EVENT_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -47,7 +48,7 @@ struct ProcessEvent : TraceEvent<T> {
         for (auto i = 1; i < e.size(); i++) {
           std::copy(reinterpret_cast<char*>(&(e[i].data[1])),
                     reinterpret_cast<char*>(&(e[i].data[2])) + 4,
-                    &name[(i - 1) * 8]);
+                    &name[(static_cast<size_t>(i) - 1) * 8]);
         }
         auto& process = GetRunningProcess(e[0].data[2]);
         if (!process) {
@@ -63,7 +64,7 @@ struct ProcessEvent : TraceEvent<T> {
         for (auto i = 1; i < e.size(); i++) {
           std::copy(reinterpret_cast<char*>(&(e[i].data[1])),
                     reinterpret_cast<char*>(&(e[i].data[2])) + 4,
-                    &name[(i - 1) * 8]);
+                    &name[static_cast<size_t>(i - 1) * 8]);
         }
         auto& thread = GetRunningThread(e[0].data[1], e[0].data[2]);
         if (!thread) {
@@ -76,8 +77,7 @@ struct ProcessEvent : TraceEvent<T> {
         break;
       }
       case _NTO_TRACE_PROCCREATE: {
-        uint32_t ppid = e[0].data[1];
-        uint32_t pid = e[0].data[2];
+        const uint32_t pid = e[0].data[2];
         auto& process = GetRunningProcess(pid);
         if (!process) {
           process.reset(new ProcessInfo());
