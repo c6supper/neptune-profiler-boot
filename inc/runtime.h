@@ -13,6 +13,8 @@
 #define Verbose() (*ArgContext())["verbose"].as<bool>()
 #define Ftrace() (*ArgContext())["ftrace"].as<bool>()
 #define Tree() (*ArgContext())["tree"].as<std::string>()
+#define StartFrom() (*ArgContext())["start"].as<uint32_t>()
+#define EndBy() (*ArgContext())["end"].as<uint32_t>()
 
 namespace coding_nerd::boot_perf {
 

@@ -37,6 +37,16 @@ std::chrono::microseconds TraceClock::MicroSinceBootFromCycle(
       1000 * 1000 / cycle_per_sec_};
 }
 
+std::chrono::milliseconds TraceClock::MilliSinceBootFromCycle(
+    const uint32_t cycle) const {
+  if (!IsValid()) FatalLogger() << "Clock haven't been initialized";
+
+  return std::chrono::milliseconds{
+      (static_cast<uint64_t>(trace_cycle_turn_over_) << 32 |
+       static_cast<uint64_t>(cycle - trace_boot_cycle_)) *
+      1000 / cycle_per_sec_};
+}
+
 const uint32_t& TraceClock::GetCycleTurnOver() const {
   return trace_cycle_turn_over_;
 }

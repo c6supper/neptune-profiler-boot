@@ -60,6 +60,15 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
 
       trace_clock_->SetTraceBootCycle(event->data[0]);
 
+      const uint32_t milli_sec =
+          trace_clock_->MilliSinceBootFromCycle(event->data[0]).count();
+      if (milli_sec < StartFrom()) {
+        continue;
+      }
+      if (milli_sec > EndBy()) {
+        break;
+      }
+
       auto async_parse = [&, event]() {
         nlohmann::json json;
         if (Verbose()) {
@@ -147,7 +156,9 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
     if (!Ftrace()) {
       ofs << R"(],"displayTimeUnit": "ns"})";
     } else {
-      ofs << R"(","controllerTraceDataKey": "systraceController"})";
+      ofs << R"(","controllerTraceDataKey": "systraceController",)";
+      GetProcMeta(ofs);
+      ofs << "}";
     }
     if (!Tree().empty()) {
       std::ofstream tree_ofs(std::move(Tree()), std::ios::binary |

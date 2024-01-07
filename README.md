@@ -32,6 +32,17 @@ How to Run
 
 > * 
 
+
+Cheetsheet for Perfetto SQL
+-----------------
+
+> * Statistics for Context Switching per Core
+~~~~sql
+ drop view context_switch_count;
+ create view context_switch_count as select id,ts,name,cpu,count(CASE WHEN cpu=0 THEN 1 END) over (ROWS 1400 PRECEDING) as cpu0,count(CASE WHEN cpu=1 THEN 1 END) over (ROWS 1400 PRECEDING) as cpu1,count(CASE WHEN cpu=2 THEN 1 END) over (ROWS 1400 PRECEDING) as cpu2,count(CASE WHEN cpu=3 THEN 1 END) over (ROWS 1400 PRECEDING) as cpu3,count(CASE WHEN cpu=4 THEN 1 END) over (ROWS 1400 PRECEDING) as cpu4,count(CASE WHEN cpu=5 THEN 1 END) over (ROWS 1400 PRECEDING) as cpu5,count(CASE WHEN cpu=6 THEN 1 END) over (ROWS 1400 PRECEDING) as cpu6,count(CASE WHEN cpu=7 THEN 1 END) over (ROWS 1400 PRECEDING) as cpu7 from ftrace_event;
+select cast(ts as double)/1000000000 as ts,cpu0,cpu1,cpu2,cpu3,cpu4,cpu5,cpu6,cpu7 from context_switch_count where id % 1400 = 0;
+~~~~
+
 License
 -------
 

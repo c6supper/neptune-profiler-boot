@@ -103,7 +103,7 @@ struct ThreadEvent : TraceEvent<T> {
           thread_info.reset(new ThreadInfo());
         }
         thread_info->tgid = e[0].data[1];
-        thread_info->tid = e[0].data[2];
+        thread_info->tid = TO_FTRACE_TID(e[0].data[1], e[0].data[2]);
         thread_info->priority = e[1].data[1];
         thread_info->policy = e[1].data[2];
         thread_info->cpu = _NTO_TRACE_GETCPU(e[0].header);
@@ -127,11 +127,11 @@ struct ThreadEvent : TraceEvent<T> {
 sched_switch: prev_comm=%s prev_pid=%d \
 prev_prio=%d prev_state=%s ==> next_comm=%s \
 next_pid=%d next_prio=%d\\n ") %
-            cpu_process_info->name % cpu_process_info->pid %
+            cpu_process_info->name % cpu_thread_info->tid %
             _NTO_TRACE_GETCPU(e[0].header) % sec % cpu_process_info->name %
-            cpu_process_info->pid % cpu_thread_info->priority %
+            cpu_thread_info->tid % cpu_thread_info->priority %
             EventToLinuxState(cpu_thread_info->state) % next_process_info->name %
-            next_process_info->pid % thread_info->priority);
+            thread_info->tid % thread_info->priority);
         // clang-format on
         cpu_thread_info = thread_info;
         InfoLogger() << "_NTO_TRACE_THRUNNING " << *thread_info;
@@ -143,7 +143,7 @@ next_pid=%d next_prio=%d\\n ") %
           thread_info.reset(new ThreadInfo());
         }
         thread_info->tgid = e[0].data[1];
-        thread_info->tid = e[0].data[2];
+        thread_info->tid = TO_FTRACE_TID(e[0].data[1], e[0].data[2]);
         thread_info->cpu = _NTO_TRACE_GETCPU(e[0].header);
         InfoLogger() << "_NTO_TRACE_THCREATE " << *thread_info;
         break;

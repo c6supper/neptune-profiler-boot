@@ -70,7 +70,7 @@ struct ProcessEvent : TraceEvent<T> {
         if (!thread) {
           thread.reset(new ThreadInfo());
         }
-        thread->tid = e[0].data[2];
+        thread->tid = TO_FTRACE_TID(e[0].data[1], e[0].data[2]);
         thread->tgid = e[0].data[1];
         thread->name = std::move(std::string(name));
         InfoLogger() << "_NTO_TRACE_PROCTHREAD_NAME " << *thread;

@@ -5,6 +5,8 @@
 
 // NOLINTBEGIN
 
+#define TO_FTRACE_TID(pid, tid) ((pid << 8) | (tid & 0x000000FF))
+
 // kernel state
 enum {
   __KER_NOP,         /*  0		0x00 */

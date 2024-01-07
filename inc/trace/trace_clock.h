@@ -23,6 +23,10 @@ class TraceClock {
 
   [[nodiscard]] std::chrono::microseconds MicroSinceBootFromCycle(
       uint32_t cycle) const;
+
+  [[nodiscard]] std::chrono::milliseconds MilliSinceBootFromCycle(
+      uint32_t cycle) const;
+
   [[nodiscard]] const uint32_t& GetCycleTurnOver() const;
   void TurnOverCycle();
 

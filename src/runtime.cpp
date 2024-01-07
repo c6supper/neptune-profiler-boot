@@ -33,6 +33,8 @@ bool Runtime::CreateArg(int argc, const char* argv[]) {
         ("o,output", "Output Trace File", cxxopts::value<std::string>())
         ("f,ftrace", "Enable output to ftrace",cxxopts::value<bool>()->default_value("false"))
         ("t,tree", "Generate Process/Thread tree to File",cxxopts::value<std::string>())
+        ("s,start", "Event time start from (in milli sec)",cxxopts::value<uint32_t>()->default_value("0"))
+        ("e,end", "Event time end by (in milli sec)",cxxopts::value<uint32_t>()->default_value("999000"))
         ("h,help","Print usage");
     // clang-format on
     options.parse_positional({"input"});

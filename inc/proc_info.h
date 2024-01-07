@@ -9,6 +9,8 @@
 
 #include "trace_type.h"
 
+#define GetProcMeta(os) coding_nerd::boot_perf::ProcInfo::Singleton().ToMeta(os)
+
 #define GetProc() coding_nerd::boot_perf::ProcInfo::Singleton()
 
 #define GetRunningThread(pid, tid) \
@@ -101,6 +103,7 @@ struct ProcInfo {
   static ProcInfo& Singleton();
   void Dead(const uint32_t& pid);
   std::shared_ptr<ProcessInfo>& operator[](const uint32_t& pid);
+  void ToMeta(std::ostream& os);
 
   friend std::ostream& operator<<(std::ostream& os, ProcInfo const& proc) {
     os << R"({"Process": [)";
