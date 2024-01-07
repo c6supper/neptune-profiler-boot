@@ -138,6 +138,7 @@ next_pid=%d next_prio=%d\\n ") %
         break;
       }
       case _NTO_TRACE_THCREATE: {
+        auto& process_info = GetRunningProcess(e[0].data[1]);
         auto& thread_info = GetRunningThread(e[0].data[1], e[0].data[2]);
         if (!thread_info) {
           thread_info.reset(new ThreadInfo());
@@ -145,6 +146,7 @@ next_pid=%d next_prio=%d\\n ") %
         thread_info->tgid = e[0].data[1];
         thread_info->tid = TO_FTRACE_TID(e[0].data[1], e[0].data[2]);
         thread_info->cpu = _NTO_TRACE_GETCPU(e[0].header);
+        thread_info->state = STATE_READY;
         InfoLogger() << "_NTO_TRACE_THCREATE " << *thread_info;
         break;
       }
@@ -161,7 +163,6 @@ next_pid=%d next_prio=%d\\n ") %
 
     switch (ext_event) {
       case _NTO_TRACE_THDEAD:
-      case _NTO_TRACE_THRUNNING:
       case _NTO_TRACE_THREADY:
       case _NTO_TRACE_THSTOPPED:
       case _NTO_TRACE_THSEND:
@@ -180,14 +181,18 @@ next_pid=%d next_prio=%d\\n ") %
       case _NTO_TRACE_THSEM:
       case _NTO_TRACE_THWAITCTX:
       case _NTO_TRACE_THNET_SEND:
-      case _NTO_TRACE_THNET_REPLY:
-      case _NTO_TRACE_THCREATE: {
+      case _NTO_TRACE_THNET_REPLY: {
         if (!GetRunningProcess(e[0].data[1])) {
           break;
         }
         auto& thread_info = GetRunningThread(e[0].data[1], e[0].data[2]);
         if (!thread_info) {
           break;
+        }
+
+        if (e.size() > 1) {
+          thread_info->priority = e[1].data[1];
+          thread_info->policy = e[1].data[2];
         }
 
         thread_info->state = EventToState(ext_event);
