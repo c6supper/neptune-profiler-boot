@@ -6,6 +6,7 @@
 // NOLINTBEGIN
 
 #define TO_FTRACE_TID(pid, tid) ((pid << 8) | (tid & 0x000000FF))
+#define TO_QNX_TID(tid) (tid & 0x000000FF)
 
 // kernel state
 enum {

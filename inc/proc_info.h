@@ -46,7 +46,7 @@ struct ThreadInfo {
   uint32_t cpu;
   friend std::ostream& operator<<(std::ostream& os, ThreadInfo const& thread) {
     return os << R"({"tgid":)" << thread.tgid << ","
-              << R"("tid":)" << thread.tid << ","
+              << R"("tid":)" << TO_QNX_TID(thread.tid) << ","
               << R"("priority":)" << thread.priority << ","
               << R"("policy":)" << thread.policy << ","
               << R"("state":")" << task_state[thread.state] << R"(",)"
