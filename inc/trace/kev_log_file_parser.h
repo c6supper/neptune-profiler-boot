@@ -156,7 +156,7 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
     if (!Ftrace()) {
       ofs << R"(],"displayTimeUnit": "ns"})";
     } else {
-      ofs << R"(","controllerTraceDataKey": "systraceController",)";
+      ofs << R"(","displayTimeUnit": "ms","controllerTraceDataKey": "systraceController",)";
       GetProcMeta(ofs);
       ofs << "}";
     }
