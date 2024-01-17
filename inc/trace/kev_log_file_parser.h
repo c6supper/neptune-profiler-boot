@@ -62,9 +62,6 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
 
       const uint32_t milli_sec =
           trace_clock_->MilliSinceBootFromCycle(event->data[0]).count();
-      if (milli_sec < StartFrom()) {
-        continue;
-      }
       if (milli_sec > EndBy()) {
         break;
       }
@@ -135,7 +132,11 @@ class KeyLogFileParser : public TraceParser<std::ifstream, Out> {
             break;
         }
         if (!ftrace.empty()) {
-          ofs << ftrace;
+          const uint32_t milli_sec =
+              trace_clock_->MilliSinceBootFromCycle(event->data[0]).count();
+          if (milli_sec >= StartFrom() && milli_sec <= EndBy()) {
+            ofs << ftrace;
+          }
         }
       };
       if (Ftrace()) {
