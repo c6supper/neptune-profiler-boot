@@ -25,7 +25,7 @@ struct ProcessEvent : TraceEvent<T> {
   ~ProcessEvent() override = default;
   explicit ProcessEvent(std::shared_ptr<T>& event,
                         std::shared_ptr<TraceClock>& clock)
-      : TraceEvent<T>(event, clock){};
+      : TraceEvent<T>(event, clock) {};
 
   static void ToJson(nlohmann::json& j, std::vector<T>& e,
                      const TraceClock& trace_clock) {
@@ -80,7 +80,7 @@ struct ProcessEvent : TraceEvent<T> {
         const uint32_t pid = e[0].data[2];
         auto& process = GetRunningProcess(pid);
         if (!process) {
-          process.reset(new ProcessInfo());
+          process.reset(new ProcessInfo());  // NOLINT
         }
         process->pid = e[0].data[2];
         process->ppid = e[0].data[1];

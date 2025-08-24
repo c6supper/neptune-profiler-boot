@@ -1,7 +1,9 @@
 #include "runtime.h"
 
+// NOLINTBEGIN
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
+// NOLINTEND
 #include <boost/log/trivial.hpp>
 #include <iostream>
 #include <memory>

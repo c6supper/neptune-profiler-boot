@@ -1,8 +1,10 @@
 #include "proc_info.h"
 
 #include <cstdint>
+#include <iterator>
 #include <memory>
 #include <ostream>
+#include <string>
 #include <utility>
 
 namespace coding_nerd::boot_perf {

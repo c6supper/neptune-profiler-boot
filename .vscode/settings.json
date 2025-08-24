@@ -156,6 +156,7 @@
   "C_Cpp.errorSquiggles": "disabled",
   "C_Cpp.codeAnalysis.runAutomatically": true,
   "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
-    "bugprone-easily-swappable-parameters"
+    "bugprone-easily-swappable-parameters",
+    "misc-include-cleaner"
   ],
 }

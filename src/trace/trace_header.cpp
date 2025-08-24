@@ -1,9 +1,18 @@
 #include "trace/trace_header.h"
 
 #include <boost/lexical_cast.hpp>
+#include <boost/none.hpp>
+#include <boost/optional.hpp>  // NOLINT
+#include <boost/variant/get.hpp>
+#include <cstdint>
+#include <cstring>
+#include <fstream>
 #include <iostream>
-#include <memory>
+#include <mutex>
 #include <regex>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "logger.h"
 #include "trace/trace_type.h"
@@ -28,24 +37,26 @@ TraceHeader::TraceHeader(std::ifstream& ifs) {
       try {
         attributes_map_[key] =
             std::move(boost::lexical_cast<uint32_t>(match[1]));
-      } catch (const boost::bad_lexical_cast& e) {
+      } catch (const boost::bad_lexical_cast& e) {  // NOLINT
         attributes_map_[key] = std::move(match[1]);
       }
     }
   }
-  boost::optional<TraceHeader::AttributeType> opt_page_len =
+  boost::optional<TraceHeader::AttributeType> opt_page_len =  // NOLINT
       attributes_map_[_TRACE_MK_HK(SYSPAGE_LEN)];
-  boost::optional<TraceHeader::AttributeType> opt_cycles_per_sec =
+  boost::optional<TraceHeader::AttributeType> opt_cycles_per_sec =  // NOLINT
       attributes_map_[_TRACE_MK_HK(CYCLES_PER_SEC)];
 
   if (!opt_page_len || !opt_cycles_per_sec) {
-    FatalLogger() << "Invalid key log file, syspage_len or cycles_per_sec header "
-               "missing!";
+    FatalLogger()
+        << "Invalid key log file, syspage_len or cycles_per_sec header "
+           "missing!";
   }
   const uint32_t page_len = boost::get<uint32_t>(*opt_page_len);
   cycles_per_sec_ = boost::get<uint32_t>(*opt_cycles_per_sec);
   ifs.seekg(pos + page_len);
-  VerboseLogger() << "Found trace log header, end at pos = " << (pos + page_len);
+  VerboseLogger() << "Found trace log header, end at pos = "
+                  << (pos + page_len);
 
   for (auto& attr : attributes_map_) {
     VerboseLogger() << ' ' << attr.first << attr.second << '\n';
@@ -54,7 +65,7 @@ TraceHeader::TraceHeader(std::ifstream& ifs) {
 
 uint32_t TraceHeader::CyclesPerSec() const { return cycles_per_sec_; }
 
-boost::optional<TraceHeader::AttributeType&> TraceHeader::Attribute(
+boost::optional<TraceHeader::AttributeType&> TraceHeader::Attribute(  // NOLINT
     const std::string& key) {
   const std::lock_guard<std::mutex> guard(attributes_mutex_);
   auto iter = attributes_map_.find(key);

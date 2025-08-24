@@ -1,6 +1,7 @@
 #include "trace/trace_clock.h"
 
-#include <memory>
+#include <chrono>
+#include <cstdint>
 
 #include "logger.h"
 
